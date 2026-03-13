@@ -9,7 +9,9 @@ Membros do grupo:
 - Julia Bezerra de Paula
   
 Tecnologias utilizadas:
-- python
-- SQL
+- Python
+- MySQL
+- Visual Studio Code
+- GitHub
 
 Instruções claras para execução do sistema:
