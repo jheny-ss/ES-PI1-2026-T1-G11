@@ -40,3 +40,14 @@ CREATE TABLE candidatos (
     partido VARCHAR(100) NOT NULL
 );
 
+/**
+ ============================================================
+ TABELA: votacao
+ ============================================================
+ Registra os votos realizados pelos eleitores.
+ */
+CREATE TABLE votacao (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    data_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    protocolo VARCHAR(100) NOT NULL UNIQUE
+);
