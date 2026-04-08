@@ -1,0 +1,106 @@
+🧱 1. Estrutura padrão (OFICIAL)
+
+tipo(escopo): descrição
+
+📌 Exemplo real:
+feat(auth): add login validation
+
+✔ Essa estrutura é definida pelo padrão Conventional Commits ([Conventional Commits][2])
+
+
+🧩 2. Tipos de commit (ESSENCIAL)
+
+Esses são os principais que você deve usar:
+
+| Tipo       | Quando usar                   |
+| ---------- | ----------------------------- |
+| `feat`     | Nova funcionalidade           |
+| `fix`      | Correção de bug               |
+| `docs`     | Documentação                  |
+| `style`    | Formatação (não muda lógica)  |
+| `refactor` | Refatoração (melhora código)  |
+| `test`     | Testes                        |
+| `chore`    | Configuração / tarefas gerais |
+| `perf`     | Performance                   |
+
+📌 Exemplo:
+
+fix: resolve error in login
+feat: add voting system
+
+
+🎯 3. Escopo (opcional, mas MUITO bom)
+
+Mostra onde foi feita a alteração:
+
+feat(auth): add login
+fix(api): correct response error
+
+✔ Ajuda a localizar mudanças rapidamente ([DataCamp][3])
+
+
+✍️ 4. Regras para escrever commits bons
+
+✅ Linha principal (subject)
+
+- até: 50 caracteres
+- usar: verbo no imperativo
+- sem: ponto final
+
+✔ Exemplo:
+
+feat: add user authentication
+
+
+❌ Errado:
+
+added authentication
+
+
+⚠️ 5. Breaking Changes (mudanças que quebram o sistema)
+
+Você pode indicar de 2 formas:
+
+Forma 1:
+
+feat!: change API response format
+
+Forma 2:
+
+feat(api): change response format
+
+BREAKING CHANGE: response structure updated
+
+🧠 6. Exemplos reais (bem feitos)
+
+feat(voting): add vote counting logic
+fix(auth): prevent invalid token access
+docs: update README with installation guide
+refactor(user): simplify validation logic
+test: add unit tests for candidate service
+
+⚡ 7. Benefícios reais
+
+- histórico organizado
+- facilita debug
+- ajuda equipe
+- gera changelog automático
+- integra com CI/CD
+
+🎯 RESUMO FINAL
+
+👉 Use sempre:
+
+tipo(escopo): descrição
+
+👉 Tipos principais:
+
+`feat`, `fix`, `docs`, `refactor`, `test`, `chore`
+
+👉 Linguagem:
+
+* inglês
+* imperativo
+* claro e curto
+
+

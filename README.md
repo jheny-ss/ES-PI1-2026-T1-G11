@@ -15,3 +15,13 @@ Tecnologias utilizadas:
 - GitHub
 
 Instruções claras para execução do sistema:
+
+📦 Instalação das Dependências
+Este projeto depende da biblioteca responsável pela conexão com o MySQL.
+
+🔹 Instalação via pip
+Execute o seguinte comando no terminal:
+- pip install mysql-connector-python
+
+Caso utilize múltiplas versões do Python:
+- python -m pip install mysql-connector-python
