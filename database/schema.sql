@@ -27,3 +27,16 @@ CREATE TABLE eleitores (
     status_mesario BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+/**
+ ============================================================
+ TABELA: candidatos
+ ============================================================
+ Armazena os candidatos disponíveis para votação.
+ */
+CREATE TABLE candidatos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    numero_de_votacao INT NOT NULL UNIQUE,
+    partido VARCHAR(100) NOT NULL
+);
+
