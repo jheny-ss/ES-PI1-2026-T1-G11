@@ -47,3 +47,30 @@ match opc:
             case 3:
                 print("")
                 print("ENCERRAR VOTAÇÃO".center(50, "-"))
+    case 3: 
+        print("-"*50)
+        print("")
+        print("RESULTADO".center(50, "-")) 
+        print("\n1 - BOLETIM DE URNA")
+        print("2 - ESTATÍSTICAS")
+        print("3 - VOTOS POR PARTIDO")
+        print("4 - VALIDAÇÃO DE INTEGRIDADE")
+        opc3 = int(input("\nO QUE VOCÊ DESEJA VISUALIZAR: "))
+        print("-"*50)
+        match opc3:
+            case 1:
+                print("")
+                print("BOLETIM DE URNA".center(50,"-"))
+            case 2:
+                print("")
+                print("ESTATÍSTICAS".center(50,"-"))
+            case 3:
+                print("")
+                print("VOTOS POR PARTIDO".center(50,"-"))
+            case 4:
+                print("")
+                print("VALIDAÇÃO DE INTEGRIDADE".center(50,"-"))
+
+
+
+    
