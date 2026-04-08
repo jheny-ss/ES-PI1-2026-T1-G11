@@ -73,4 +73,18 @@ match opc:
 
 
 
-    
+    case 4:
+        print("-"*50)
+        print("\n")
+        print("AUDITORIA".center(50, "-"))
+        print("\n1 - LOGS DO SISTEMA")
+        print("2 - PROTOCOLOS DE VOTAÇÃO")
+        opc4 = int(input("\nO QUE VOCÊ DESEJA VISUALIZAR: "))
+        print("-"*50)
+        match opc4:
+            case 1:
+                print("")
+                print("LOGS DO SISTEMA".center(50,"-"))
+            case 2:
+                print("")
+                print("ROTOCOLOS DE VOTAÇÃO".center(50,"-"))
