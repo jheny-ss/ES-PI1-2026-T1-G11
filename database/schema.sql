@@ -3,7 +3,8 @@
 
   Descrição:
   Banco responsável por gerenciar eleitores, candidatos e votos.
-  Versão sem chaves estrangeiras e sem colunas de relacionamento.
+  Garante integridade dos dados, controle de votação única
+  e rastreabilidade das operações.
  */
 
 CREATE DATABASE sistema_de_votacao;
@@ -17,6 +18,7 @@ USE sistema_de_votacao;
   Armazena os dados dos eleitores do sistema.
   Cada eleitor pode votar apenas uma vez.
  */
+ 
 CREATE TABLE eleitores (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cpf VARCHAR(100) NOT NULL UNIQUE,
@@ -26,6 +28,7 @@ CREATE TABLE eleitores (
     status_votacao BOOLEAN NOT NULL DEFAULT FALSE,
     status_mesario BOOLEAN NOT NULL DEFAULT FALSE
 );
+
 
 /**
  ============================================================
@@ -40,14 +43,35 @@ CREATE TABLE candidatos (
     partido VARCHAR(100) NOT NULL
 );
 
+
 /**
  ============================================================
  TABELA: votacao
  ============================================================
  Registra os votos realizados pelos eleitores.
+ Cada eleitor pode votar apenas uma vez.
  */
 CREATE TABLE votacao (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    eleitor_id INT NOT NULL,
+    candidato_id INT NOT NULL,
     data_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    protocolo VARCHAR(100) NOT NULL UNIQUE
+    protocolo VARCHAR(100) NOT NULL UNIQUE,
+
+    /**
+    Relacionamento com a tabela eleitores
+     */
+    CONSTRAINT fk_eleitor
+        FOREIGN KEY (eleitor_id) REFERENCES eleitores(id),
+
+    /**
+    Relacionamento com a tabela candidatos
+     */
+    CONSTRAINT fk_candidato
+        FOREIGN KEY (candidato_id) REFERENCES candidatos(id),
+
+    /**
+    Garante que um eleitor vote apenas uma vez
+     */
+    UNIQUE (eleitor_id)
 );
