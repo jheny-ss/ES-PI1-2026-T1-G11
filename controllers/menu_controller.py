@@ -1,8 +1,27 @@
+from models.elector import (
+    listar_eleitores,
+    buscar_eleitor,
+    remover_eleitor,
+    editar_eleitor,
+    inserir_eleitor
+)
+
+from models.candidate import (
+    listar_candidatos,
+    buscar_candidato,
+    remover_candidato,
+    editar_candidato,
+    inserir_candidato
+)
+
 from views.menus import (
     main_menu,
     management_menu,
     voting_menu,
     results_menu,
+    audit_menu,
+    elector_menu,
+    candidate_menu,
 )
 
 def run_system():
@@ -26,9 +45,8 @@ def run_system():
               handle_results()
               return True
           case 4:
-            print("\nAbrindo sistema de auditoria...")
-            input("\nPressione ENTER para continuar...")
-            return True
+              handle_audit()
+              return True
           case 5:
             print("\nEncerrando sistema...")
             return False
@@ -46,11 +64,9 @@ def handle_management():
 
     match choice:
         case 1:
-            print("\nGerenciamento de eleitores...")
-            input("\nPressione ENTER para continuar...")
+            return handle_electors()
         case 2:
-            print("\nGerenciamento de candidatos...")
-            input("\nPressione ENTER para continuar...")
+            return handle_candidates()
         case 3: #VOLTAR
             return
         case _:
@@ -121,4 +137,138 @@ def handle_results():
             print("Opção inválida!")
             input("\nPressione ENTER para continuar...")
             return handle_voting()
-        
+
+def handle_audit():
+    """
+    Controla o fluxo do módulo de auditoria.
+    """
+    choice = audit_menu()
+
+    match choice:
+        case 1:
+            print("Logs do sistema...")
+            input("\nPressione ENTER para continuar...")
+            return handle_audit()
+
+        case 2:
+            print("Protocolos...")
+            input("\nPressione ENTER para continuar...")
+            return handle_audit()
+
+        case 3: # VOLTAR
+            return
+
+        case _:
+            print("Opção inválida!")
+            input("\nPressione ENTER para continuar...")
+            return handle_audit()
+
+def handle_electors():
+    """
+    Controla o fluxo do menu de eleitores.
+    """
+    choice = elector_menu()
+
+    match choice:
+        case 1:
+          listar_eleitores()
+
+          input("\nPressione ENTER para continuar...")
+          return handle_electors()
+
+        case 2:
+          cpf = input("Digite o CPF: ")
+          eleitor = buscar_eleitor(cpf)
+
+          if eleitor:
+            print("\nELEITOR ENCONTRADO:")
+            print(eleitor)
+          else:
+            print("Eleitor não encontrado!")
+
+          input("\nPressione ENTER para continuar...")
+          return handle_electors()
+
+        case 3:
+          cpf = input("CPF do eleitor a remover: ")
+          remover_eleitor(cpf)
+
+          input("\nPressione ENTER para continuar...")
+          return handle_electors()
+
+        case 4:
+          editar_eleitor()
+
+          input("\nPressione ENTER para continuar...")
+          return handle_electors()
+
+        case 5:
+          nome = input("Nome: ")
+          cpf = input("CPF: ")
+          titulo = input("Título: ")
+          chave = input("Chave: ")
+
+          inserir_eleitor(nome, cpf, titulo, chave)
+
+          input("\nPressione ENTER para continuar...")
+          return handle_electors()
+
+        case 6:  # VOLTAR
+          return handle_management()
+
+        case _:
+          print("Opção inválida!")
+          input("\nPressione ENTER para continuar...")
+          return handle_electors()
+
+def handle_candidates():
+    """
+    Controla o fluxo do menu de candidatos.
+    """
+    choice = candidate_menu()
+
+    match choice:
+        case 1:
+          listar_candidatos()
+
+          input("\nPressione ENTER para continuar...")
+          return handle_candidates()
+        case 2:
+          numero = input("Número do candidato: ")
+          candidato = buscar_candidato(numero)
+
+          if candidato:
+            print("\nCANDIDATO ENCONTRADO:")
+            print(candidato)
+          else:
+            print("Candidato não encontrado!")
+
+          input("\nPressione ENTER para continuar...")
+          return handle_candidates()
+        case 3:
+          numero = input("Número do candidato a remover: ")
+          remover_candidato(numero)
+
+          input("\nPressione ENTER para continuar...")
+          return handle_candidates()
+        case 4:
+
+          editar_candidato()
+
+          input("\nPressione ENTER para continuar...")
+          return handle_candidates()
+        case 5:
+          nome = input("Nome: ")
+          numero = input("Número: ")
+          partido = input("Partido: ")
+
+          inserir_candidato(nome, numero, partido)
+
+          input("\nPressione ENTER para continuar...")
+          return handle_candidates()
+        case 6:  # VOLTAR
+          return handle_management()
+        case _:
+          print("Opção inválida!")
+          input("\nPressione ENTER para continuar...")
+          return handle_candidates()
