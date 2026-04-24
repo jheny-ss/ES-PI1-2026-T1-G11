@@ -49,3 +49,72 @@ def management_menu():
         int: Opção escolhida (Eleitores ou Candidatos).
     """
     return show_menu("GERENCIAMENTO", ["ELEITORES", "CANDIDATOS", "VOLTAR"])
+
+
+def results_menu():
+    """
+    Exibe o menu de resultados da votação.
+
+    Returns:
+        int: Opção escolhida para visualização dos resultados.
+    """
+    return show_menu(
+        "RESULTADOS",
+        [
+            "BOLETIM DE URNA",
+            "ESTATÍSTICAS",
+            "VOTOS POR PARTIDO",
+            "VALIDAÇÃO DE INTEGRIDADE",
+            "VOLTAR",
+        ],
+    )
+
+
+def audit_menu():
+    """
+    Exibe o menu de auditoria do sistema.
+
+    Returns:
+        int: Opção escolhida para auditoria (logs ou protocolos).
+    """
+    return show_menu("AUDITORIA", ["LOGS DO SISTEMA", "PROTOCOLOS", "VOLTAR"])
+
+
+def elector_menu():
+    """
+    Exibe o menu de gerenciamento de eleitores.
+
+    Returns:
+        int: Opção escolhida para operações com eleitores.
+    """
+    return show_menu(
+        "ELEITORES",
+        [
+            "LISTAR ELEITORES",
+            "BUSCAR ELEITORES",
+            "REMOVER ELEITORES",
+            "EDITAR DADOS",
+            "CADASTRAR ELEITORES",
+            "VOLTAR",
+        ],
+    )
+
+
+def candidate_menu():
+    """
+    Exibe o menu de gerenciamento de candidatos.
+
+    Returns:
+        int: Opção escolhida para operações com candidatos.
+    """
+    return show_menu(
+        "CANDIDATOS",
+        [
+            "LISTAR CANDIDATOS",
+            "BUSCAR CANDIDATOS",
+            "REMOVER CANDIDATOS",
+            "EDITAR DADOS",
+            "CADASTRAR CANDIDATOS",
+            "VOLTAR",
+        ],
+    )
