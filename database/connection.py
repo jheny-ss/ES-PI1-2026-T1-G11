@@ -1,29 +1,28 @@
 import mysql.connector
 
-# Conexão com o banco
-conexao = mysql.connector.connect(
-    host='localhost',
-    user='seu_usuario',
-    password='sua_senha',
-    database='nome_do_banco'
-)
 
-cursor = conexao.cursor()
+def get_connection():
+    """
+    Cria e retorna uma conexão com o banco de dados MySQL.
 
-# ---------- POST: Inserir um novo usuário ----------
-def inserir_usuario(nome, email):
-    sql = "INSERT INTO usuarios (nome, email) VALUES (%s, %s)"
-    valores = (nome, email)
-    cursor.execute(sql, valores)
-    conexao.commit()
-    print("Usuário inserido com ID:", cursor.lastrowid)
+    Returns:
+        connection: Objeto de conexão.
+    """
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",          # ajuste conforme seu ambiente
+        password="Juju@0707",          # ajuste conforme seu ambiente
+        database="sistema_de_votacao"
+    )
 
-# ---------- GET: Buscar todos os usuários ----------
-def listar_usuarios():
-    cursor.execute("SELECT id, nome, email FROM usuarios")
-    for (id, nome, email) in cursor.fetchall():
-        print(f"ID: {id}, Nome: {nome}, Email: {email}")
 
-# Exemplo de uso
-inserir_usuario("Joice", "joice@email.com")
-listar_usuarios()
+def get_cursor():
+    """
+    Retorna conexão e cursor configurado para dicionário.
+
+    Returns:
+        tuple: (conexao, cursor)
+    """
+    conexao = get_connection()
+    cursor = conexao.cursor(dictionary=True)
+    return conexao, cursor
