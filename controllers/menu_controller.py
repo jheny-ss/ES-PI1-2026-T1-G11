@@ -1,274 +1,247 @@
-from models.elector import (
-    listar_eleitores,
-    buscar_eleitor,
-    remover_eleitor,
-    editar_eleitor,
-    inserir_eleitor
-)
+from models.elector import *
+from models.candidate import *
+from models.voting import *
 
-from models.candidate import (
-    listar_candidatos,
-    buscar_candidato,
-    remover_candidato,
-    editar_candidato,
-    inserir_candidato
-)
+from views.menus import *
 
-from views.menus import (
-    main_menu,
-    management_menu,
-    voting_menu,
-    results_menu,
-    audit_menu,
-    elector_menu,
-    candidate_menu,
-)
+# =========================
+# SISTEMA PRINCIPAL
+# =========================
 
 def run_system():
-    """
-    Controla o fluxo principal do sistema.
+    while True:
+        choice = main_menu()
 
-    Exibe continuamente o menu principal e direciona o usuário
-    para o módulo selecionado.
-    """
+        match choice:
+            case 1:
+                handle_management()
+            case 2:
+                handle_voting()
+            case 3:
+                print("Encerrando sistema...")
+                break
+            case _:
+                print("Opção inválida!")
 
-    choice = main_menu()
 
-    match choice:
-          case 1:
-              handle_management()
-              return True
-          case 2:
-              handle_voting()
-              return True
-          case 3:
-              handle_results()
-              return True
-          case 4:
-              handle_audit()
-              return True
-          case 5:
-            print("\nEncerrando sistema...")
-            return False
-          case _:
-              print("Opção inválida!")
-              return True
+# =========================
+# GERENCIAMENTO
+# =========================
 
 def handle_management():
-    """
-    Controla o fluxo do módulo de gerenciamento.
+    while True:
+        choice = management_menu()
 
-    Direciona o usuário para o gerenciamento de eleitores ou candidatos.
-    """
-    choice = management_menu()
+        match choice:
+            case 1:
+                handle_electors()
+            case 2:
+                handle_candidates()
+            case 3:
+                return
+            case _:
+                print("Opção inválida!")
 
-    match choice:
-        case 1:
-            return handle_electors()
-        case 2:
-            return handle_candidates()
-        case 3: #VOLTAR
-            return
-        case _:
-            print("Opção inválida!")
-            return handle_management()
 
-def handle_voting():
-    """
-    Controla o fluxo do módulo de votação.
-    """
-    choice = voting_menu()
-
-    match choice:
-        case 1:
-            print("Abrindo sistema de votação...")
-            input("\nPressione ENTER para continuar...")
-            return handle_voting()
-
-        case 2:
-            print("Votar...")
-            input("\nPressione ENTER para continuar...")
-            return handle_voting()
-
-        case 3:
-            print("Encerrando votação...")
-            input("\nPressione ENTER para continuar...")
-            return handle_voting()
-
-        case 4:  # VOLTAR
-            return
-
-        case _:
-            print("Opção inválida!")
-            input("\nPressione ENTER para continuar...")
-            return handle_voting()
-
-def handle_results():
-    """
-    Controla o fluxo do módulo de resultados.
-    """
-    choice = results_menu()
-
-    match choice:
-        case 1:
-            print("Boletim de urna...")
-            input("\nPressione ENTER para continuar...")
-            return handle_results()
-
-        case 2:
-            print("Estatísticas...")
-            input("\nPressione ENTER para continuar...")
-            return handle_results()
-
-        case 3:
-            print("Votos por Partido...")
-            input("\nPressione ENTER para continuar...")
-            return handle_results()
-
-        case 4:
-            print("Validação de Integridade...")
-            input("\nPressione ENTER para continuar...")
-            return handle_results()
-
-        case 5:  # VOLTAR
-            return
-
-        case _:
-            print("Opção inválida!")
-            input("\nPressione ENTER para continuar...")
-            return handle_voting()
-
-def handle_audit():
-    """
-    Controla o fluxo do módulo de auditoria.
-    """
-    choice = audit_menu()
-
-    match choice:
-        case 1:
-            print("Logs do sistema...")
-            input("\nPressione ENTER para continuar...")
-            return handle_audit()
-
-        case 2:
-            print("Protocolos...")
-            input("\nPressione ENTER para continuar...")
-            return handle_audit()
-
-        case 3: # VOLTAR
-            return
-
-        case _:
-            print("Opção inválida!")
-            input("\nPressione ENTER para continuar...")
-            return handle_audit()
+# =========================
+# ELEITORES
+# =========================
 
 def handle_electors():
-    """
-    Controla o fluxo do menu de eleitores.
-    """
-    choice = elector_menu()
+    while True:
+        choice = elector_menu()
 
-    match choice:
-        case 1:
-          listar_eleitores()
+        match choice:
+            case 1:
+                listar_eleitores()
 
-          input("\nPressione ENTER para continuar...")
-          return handle_electors()
+            case 2:
+                cpf = input("CPF: ")
+                eleitor = buscar_eleitor(cpf)
+                print(eleitor if eleitor else "Não encontrado!")
 
-        case 2:
-          cpf = input("Digite o CPF: ")
-          eleitor = buscar_eleitor(cpf)
+            case 3:
+                cpf = input("CPF: ")
+                remover_eleitor(cpf)
 
-          if eleitor:
-            print("\nELEITOR ENCONTRADO:")
-            print(eleitor)
-          else:
-            print("Eleitor não encontrado!")
+            case 4:
+                editar_eleitor()
 
-          input("\nPressione ENTER para continuar...")
-          return handle_electors()
+            case 5:
+                nome = input("Nome: ")
+                cpf = input("CPF: ")
+                titulo = input("Título: ")
 
-        case 3:
-          cpf = input("CPF do eleitor a remover: ")
-          remover_eleitor(cpf)
+                if eleitor_existe(cpf, titulo):
+                    print("CPF ou título já cadastrado!")
+                else:
+                    resp = input("É mesário? (Sim/Não): ")
+                    status = True if resp == "Sim" else False
 
-          input("\nPressione ENTER para continuar...")
-          return handle_electors()
+                    chave = gerar_chave_acesso()
+                    print("Chave:", chave)
 
-        case 4:
-          editar_eleitor()
+                    inserir_eleitor(nome, cpf, titulo, chave, status)
 
-          input("\nPressione ENTER para continuar...")
-          return handle_electors()
+            case 6:
+                return
 
-        case 5:
-          nome = input("Nome: ")
-          cpf = input("CPF: ")
-          titulo = input("Título: ")
-          chave = input("Chave: ")
+            case _:
+                print("Opção inválida!")
 
-          inserir_eleitor(nome, cpf, titulo, chave)
+        input("\nENTER para continuar...")
 
-          input("\nPressione ENTER para continuar...")
-          return handle_electors()
 
-        case 6:  # VOLTAR
-          return handle_management()
-
-        case _:
-          print("Opção inválida!")
-          input("\nPressione ENTER para continuar...")
-          return handle_electors()
+# =========================
+# CANDIDATOS
+# =========================
 
 def handle_candidates():
-    """
-    Controla o fluxo do menu de candidatos.
-    """
-    choice = candidate_menu()
+    while True:
+        choice = candidate_menu()
 
-    match choice:
-        case 1:
-          listar_candidatos()
+        match choice:
+            case 1:
+                listar_candidatos()
 
-          input("\nPressione ENTER para continuar...")
-          return handle_candidates()
-        case 2:
-          numero = input("Número do candidato: ")
-          candidato = buscar_candidato(numero)
+            case 2:
+                numero = input("Número: ")
+                candidato = buscar_candidato(numero)
+                print(candidato if candidato else "Não encontrado!")
 
-          if candidato:
-            print("\nCANDIDATO ENCONTRADO:")
-            print(candidato)
-          else:
-            print("Candidato não encontrado!")
+            case 3:
+                numero = input("Número: ")
+                remover_candidato(numero)
 
-          input("\nPressione ENTER para continuar...")
-          return handle_candidates()
-        case 3:
-          numero = input("Número do candidato a remover: ")
-          remover_candidato(numero)
+            case 4:
+                editar_candidato()
 
-          input("\nPressione ENTER para continuar...")
-          return handle_candidates()
-        case 4:
+            case 5:
+                nome = input("Nome: ")
+                numero = input("Número: ")
+                partido = input("Partido: ")
 
-          editar_candidato()
+                inserir_candidato(nome, numero, partido)
 
-          input("\nPressione ENTER para continuar...")
-          return handle_candidates()
-        case 5:
-          nome = input("Nome: ")
-          numero = input("Número: ")
-          partido = input("Partido: ")
+            case 6:
+                return
 
-          inserir_candidato(nome, numero, partido)
+            case _:
+                print("Opção inválida!")
 
-          input("\nPressione ENTER para continuar...")
-          return handle_candidates()
-        case 6:  # VOLTAR
-          return handle_management()
-        case _:
-          print("Opção inválida!")
-          input("\nPressione ENTER para continuar...")
-          return handle_candidates()
+        input("\nENTER para continuar...")
+
+
+# =========================
+# VOTAÇÃO
+# =========================
+
+def handle_voting():
+    while True:
+        choice = voting_menu()
+
+        match choice:
+            case 1:
+                titulo = input("Título: ")
+                cpf = input("4 primeiros dígitos do CPF: ")
+                chave = input("Chave: ")
+
+                if validar_mesario(cpf, titulo, chave):
+                    print("Acesso autorizado!")
+                    zeresima()
+                    handle_open_voting()
+                else:
+                    print("Acesso negado!")
+
+            case 2:
+                handle_audit()
+
+            case 3:
+                handle_results()
+
+            case 4:
+                return
+
+            case _:
+                print("Opção inválida!")
+
+        input("\nENTER para continuar...")
+
+
+# =========================
+# VOTAÇÃO ABERTA
+# =========================
+
+def handle_open_voting():
+    while True:
+        choice = open_voting_menu()
+
+        match choice:
+            case 1:
+                print("Processando voto...")
+
+            case 2:
+                print("Encerrando votação...")
+                return
+
+            case 3:
+                return
+
+            case _:
+                print("Opção inválida!")
+
+        input("\nENTER para continuar...")
+
+
+# =========================
+# RESULTADOS
+# =========================
+
+def handle_results():
+    while True:
+        choice = results_menu()
+
+        match choice:
+            case 1:
+                print("Boletim de urna...")
+
+            case 2:
+                print("Estatísticas...")
+
+            case 3:
+                print("Votos por partido...")
+
+            case 4:
+                print("Validação de integridade...")
+
+            case 5:
+                return
+
+            case _:
+                print("Opção inválida!")
+
+        input("\nENTER para continuar...")
+
+
+# =========================
+# AUDITORIA
+# =========================
+
+def handle_audit():
+    while True:
+        choice = audit_menu()
+
+        match choice:
+            case 1:
+                print("Logs...")
+
+            case 2:
+                print("Protocolos...")
+
+            case 3:
+                return
+
+            case _:
+                print("Opção inválida!")
+
+        input("\nENTER para continuar...")

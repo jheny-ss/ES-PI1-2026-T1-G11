@@ -40,7 +40,17 @@ def inserir_candidato(nome, numero, partido):
     """
     Cadastra um novo candidato.
     """
+
     conexao, cursor = get_cursor()
+    if numero.isdigit():
+            cursor.execute("SELECT id FROM candidatos WHERE numero_de_votacao = %s", (numero,))
+            resultado = cursor.fetchone()
+    
+            if resultado is not None:
+                print("Número de candidato já existe!")
+                cursor.close()
+                conexao.close()
+                return
 
     sql = """
         INSERT INTO candidatos (nome, numero_de_votacao, partido)

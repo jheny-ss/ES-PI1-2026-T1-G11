@@ -25,16 +25,4 @@ VALUES
 ('Ricardo Gomes', 30, 'Partido C'),
 ('Juliana Rocha', 40, 'Partido D');
 
-/**
- ============================================================
- INSERTS: VOTAÇÃO (TESTE)
- ============================================================
-*/
-
-INSERT INTO votacao (eleitor_id, candidato_id)
-VALUES
-(2, 1),
-(3, 2),
-(4, NULL); -- voto nulo
-
 

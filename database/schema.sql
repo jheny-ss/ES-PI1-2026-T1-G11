@@ -53,25 +53,14 @@ CREATE TABLE candidatos (
  */
 CREATE TABLE votacao (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    eleitor_id INT NOT NULL,
     candidato_id INT NOT NULL,
     data_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     protocolo VARCHAR(100) NOT NULL UNIQUE,
 
     /**
-    Relacionamento com a tabela eleitores
-     */
-    CONSTRAINT fk_eleitor
-        FOREIGN KEY (eleitor_id) REFERENCES eleitores(id),
-
-    /**
     Relacionamento com a tabela candidatos
      */
     CONSTRAINT fk_candidato
-        FOREIGN KEY (candidato_id) REFERENCES candidatos(id),
-
-    /**
-    Garante que um eleitor vote apenas uma vez
-     */
-    UNIQUE (eleitor_id)
+        FOREIGN KEY (candidato_id) REFERENCES candidatos(id)
 );
+
