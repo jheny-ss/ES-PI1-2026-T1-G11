@@ -55,7 +55,7 @@ CREATE TABLE votacao (
     id                      INT AUTO_INCREMENT PRIMARY KEY,
     protocolo_criptografado VARCHAR(100) NOT NULL UNIQUE, -- comprovante embaralhado
     id_candidato            INT NULL, -- NULL significa voto nulo
-    data_voto               DATE NOT NULL DEFAULT (CURRENT_DATE), -- sem hora para evitar rastreamento
+    data_voto               DATE NOT NULL DEFAULT (CURRENT_DATE), -- sem hora para evitar rastreamento, preservando ao max o anonimato
 
     FOREIGN KEY (id_candidato)
         REFERENCES candidatos(id)
