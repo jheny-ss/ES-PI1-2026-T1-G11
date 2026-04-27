@@ -25,3 +25,4 @@ Execute o seguinte comando no terminal:
 
 Caso utilize múltiplas versões do Python:
 - python -m pip install mysql-connector-python
+

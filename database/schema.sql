@@ -20,15 +20,15 @@ USE sistema_de_votacao;
  */
  
 CREATE TABLE eleitores (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    cpf VARCHAR(100) NOT NULL UNIQUE,
-    nome VARCHAR(100) NOT NULL,
-    titulo_eleitor VARCHAR(20) NOT NULL UNIQUE,
-    chave_acesso VARCHAR(100) NOT NULL UNIQUE,
-    status_votacao BOOLEAN NOT NULL DEFAULT FALSE,
-    status_mesario BOOLEAN NOT NULL DEFAULT FALSE
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    nome            VARCHAR(100) NOT NULL,
+    titulo_eleitor  VARCHAR(20)  NOT NULL UNIQUE,
+    cpf             VARCHAR(100) NOT NULL UNIQUE,        -- criptografado com Cifra de Hill 
+    chave_acesso    VARCHAR(100) NOT NULL UNIQUE,        -- criptografado com Cifra de Hill 
+    status_votacao  BOOLEAN NOT NULL DEFAULT FALSE,      -- FALSE = não votou, TRUE = já votou
+    status_mesario  BOOLEAN NOT NULL DEFAULT FALSE,      -- FALSE = eleitor comum, TRUE = mesário
+    data_hora_voto  DATETIME NULL DEFAULT NULL           -- preenchido no momento do voto 
 );
-
 
 /**
  ============================================================
