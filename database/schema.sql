@@ -52,15 +52,13 @@ CREATE TABLE candidatos (
  Cada eleitor pode votar apenas uma vez.
  */
 CREATE TABLE votacao (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    candidato_id INT NOT NULL,
-    data_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    protocolo VARCHAR(100) NOT NULL UNIQUE,
+    id                      INT AUTO_INCREMENT PRIMARY KEY,
+    protocolo_criptografado VARCHAR(100) NOT NULL UNIQUE, -- comprovante embaralhado
+    id_candidato            INT NULL, -- NULL significa voto nulo
+    data_voto               DATE NOT NULL DEFAULT (CURRENT_DATE), -- sem hora para evitar rastreamento
 
-    /**
-    Relacionamento com a tabela candidatos
-     */
-    CONSTRAINT fk_candidato
-        FOREIGN KEY (candidato_id) REFERENCES candidatos(id)
+    FOREIGN KEY (id_candidato)
+        REFERENCES candidatos(id)
+        ON DELETE SET NULL -- candidato removido vira voto nulo, não perde o registro
 );
 
