@@ -23,6 +23,6 @@ def get_cursor():
     Returns:
         tuple: (conexao, cursor)
     """
-    conexao = get_connection()
-    cursor = conexao.cursor(dictionary=True)
-    return conexao, cursor
+    connection = get_connection()
+    cursor = connection.cursor(dictionary=True)
+    return connection, cursor

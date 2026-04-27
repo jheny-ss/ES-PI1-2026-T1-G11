@@ -9,6 +9,12 @@ from views.menus import *
 # =========================
 
 def run_system():
+    """
+    Executa o sistema principal.
+
+    Exibe o menu principal continuamente e direciona o usuário
+    para os módulos de gerenciamento, votação ou encerramento do sistema.
+    """
     while True:
         choice = main_menu()
 
@@ -29,6 +35,12 @@ def run_system():
 # =========================
 
 def handle_management():
+    """
+    Controla o fluxo do módulo de gerenciamento.
+
+    Permite ao usuário acessar as funcionalidades de
+    gerenciamento de eleitores ou candidatos.
+    """
     while True:
         choice = management_menu()
 
@@ -48,40 +60,45 @@ def handle_management():
 # =========================
 
 def handle_electors():
+    """
+    Controla o fluxo do menu de eleitores.
+
+    Permite listar, buscar, remover, editar e cadastrar eleitores.
+    """
     while True:
         choice = elector_menu()
 
         match choice:
             case 1:
-                listar_eleitores()
+                list_electors()
 
             case 2:
                 cpf = input("CPF: ")
-                eleitor = buscar_eleitor(cpf)
-                print(eleitor if eleitor else "Não encontrado!")
+                elector = get_elector_by_cpf(cpf)
+                print(elector if elector else "Não encontrado!")
 
             case 3:
                 cpf = input("CPF: ")
-                remover_eleitor(cpf)
+                delete_elector(cpf)
 
             case 4:
-                editar_eleitor()
+                update_elector()
 
             case 5:
-                nome = input("Nome: ")
+                name = input("Nome: ")
                 cpf = input("CPF: ")
-                titulo = input("Título: ")
+                voter_id = input("Título: ")
 
-                if eleitor_existe(cpf, titulo):
+                if elector_exists(cpf, voter_id):
                     print("CPF ou título já cadastrado!")
                 else:
-                    resp = input("É mesário? (Sim/Não): ")
-                    status = True if resp == "Sim" else False
+                    is_poll_worker_input = input("É mesário? (Sim/Não): ")
+                    is_poll_worker = True if is_poll_worker_input == "Sim" else False
 
-                    chave = gerar_chave_acesso()
-                    print("Chave:", chave)
+                    access_key = generate_access_key()
+                    print("Chave:", access_key)
 
-                    inserir_eleitor(nome, cpf, titulo, chave, status)
+                    create_elector(name, cpf, voter_id, access_key, is_poll_worker)
 
             case 6:
                 return
@@ -97,31 +114,36 @@ def handle_electors():
 # =========================
 
 def handle_candidates():
+    """
+    Controla o fluxo do menu de candidatos.
+
+    Permite listar, buscar, remover, editar e cadastrar candidatos.
+    """
     while True:
         choice = candidate_menu()
 
         match choice:
             case 1:
-                listar_candidatos()
+                list_candidates()
 
             case 2:
-                numero = input("Número: ")
-                candidato = buscar_candidato(numero)
-                print(candidato if candidato else "Não encontrado!")
+                number = input("Número: ")
+                candidate = get_candidate_by_number(number)
+                print(candidate if candidate else "Não encontrado!")
 
             case 3:
-                numero = input("Número: ")
-                remover_candidato(numero)
+                number = input("Número: ")
+                delete_candidate(number)
 
             case 4:
-                editar_candidato()
+                update_candidate()
 
             case 5:
-                nome = input("Nome: ")
-                numero = input("Número: ")
-                partido = input("Partido: ")
+                name = input("Nome: ")
+                number = input("Número: ")
+                party = input("Partido: ")
 
-                inserir_candidato(nome, numero, partido)
+                create_candidate(name, number, party)
 
             case 6:
                 return
@@ -137,16 +159,22 @@ def handle_candidates():
 # =========================
 
 def handle_voting():
+    """
+    Controla o fluxo do módulo de votação.
+
+    Permite autenticar o mesário, iniciar a votação,
+    acessar auditoria e visualizar resultados.
+    """
     while True:
         choice = voting_menu()
 
         match choice:
             case 1:
-                titulo = input("Título: ")
-                cpf = input("4 primeiros dígitos do CPF: ")
-                chave = input("Chave: ")
+                voter_id = input("Título: ")
+                cpf_partial = input("4 primeiros dígitos do CPF: ")
+                access_key = input("Chave: ")
 
-                if validar_mesario(cpf, titulo, chave):
+                if validate_poll_worker(cpf_partial, voter_id, access_key):
                     print("Acesso autorizado!")
                     zeresima()
                     handle_open_voting()
@@ -173,6 +201,11 @@ def handle_voting():
 # =========================
 
 def handle_open_voting():
+    """
+    Controla o fluxo da votação aberta.
+
+    Permite registrar votos e encerrar o processo de votação.
+    """
     while True:
         choice = open_voting_menu()
 
@@ -198,6 +231,12 @@ def handle_open_voting():
 # =========================
 
 def handle_results():
+    """
+    Controla o fluxo do módulo de resultados.
+
+    Permite visualizar boletim de urna, estatísticas,
+    votos por partido e validação de integridade.
+    """
     while True:
         choice = results_menu()
 
@@ -228,6 +267,11 @@ def handle_results():
 # =========================
 
 def handle_audit():
+    """
+    Controla o fluxo do módulo de auditoria.
+
+    Permite visualizar logs do sistema e protocolos de votação.
+    """
     while True:
         choice = audit_menu()
 

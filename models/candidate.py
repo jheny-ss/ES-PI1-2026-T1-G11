@@ -1,55 +1,55 @@
 from database.connection import get_cursor
 
 
-def listar_candidatos():
+def list_candidates():
     """
     Lista todos os candidatos.
     """
-    conexao, cursor = get_cursor()
+    connection, cursor = get_cursor()
 
     cursor.execute("SELECT * FROM candidatos")
 
     print("\n LISTA DE CANDIDATOS:")
-    for c in cursor.fetchall():
-        print(f"{c['nome']} - {c['numero_de_votacao']} - {c['partido']}")
+    for candidate  in cursor.fetchall():
+        print(f"{candidate['nome']} - {candidate['numero_de_votacao']} - {candidate['partido']}")
 
     cursor.close()
-    conexao.close()
+    connection.close()
 
 
-def buscar_candidato(numero):
+def get_candidate_by_number(number):
     """
     Busca candidato pelo número.
     """
-    conexao, cursor = get_cursor()
+    connection, cursor = get_cursor()
 
     cursor.execute(
         "SELECT * FROM candidatos WHERE numero_de_votacao = %s",
-        (numero,)
+        (number,)
     )
 
-    candidato = cursor.fetchone()
+    candidate = cursor.fetchone()
 
     cursor.close()
-    conexao.close()
+    connection.close()
 
-    return candidato
+    return candidate
 
 
-def inserir_candidato(nome, numero, partido):
+def create_candidate(name, number, party):
     """
     Cadastra um novo candidato.
     """
 
-    conexao, cursor = get_cursor()
-    if numero.isdigit():
-            cursor.execute("SELECT id FROM candidatos WHERE numero_de_votacao = %s", (numero,))
-            resultado = cursor.fetchone()
-    
-            if resultado is not None:
+    connection, cursor = get_cursor()
+    if number.isdigit():
+            cursor.execute("SELECT id FROM candidatos WHERE numero_de_votacao = %s", (number,))
+            result  = cursor.fetchone()
+
+            if result  is not None:
                 print("Número de candidato já existe!")
                 cursor.close()
-                conexao.close()
+                connection.close()
                 return
 
     sql = """
@@ -57,58 +57,58 @@ def inserir_candidato(nome, numero, partido):
         VALUES (%s, %s, %s)
     """
 
-    cursor.execute(sql, (nome, numero, partido))
-    conexao.commit()
+    cursor.execute(sql, (name, number, party))
+    connection.commit()
 
     print("Candidato cadastrado!")
 
     cursor.close()
-    conexao.close()
+    connection.close()
 
 
-def remover_candidato(numero):
+def delete_candidate(number):
     """
     Remove candidato pelo número.
     """
-    conexao, cursor = get_cursor()
+    connection, cursor = get_cursor()
 
     cursor.execute(
         "DELETE FROM candidatos WHERE numero_de_votacao = %s",
-        (numero,)
+        (number,)
     )
-    conexao.commit()
+    connection.commit()
 
     print("Candidato removido!")
 
     cursor.close()
-    conexao.close()
+    connection.close()
 
-def editar_candidato():
+def update_candidate():
     """
     Edita candidato pelo número.
     """
-    numero = input("Número do candidato: ")
+    number  = input("Número do candidato: ")
 
-    conexao, cursor = get_cursor()
-    cursor.execute("SELECT id FROM candidatos WHERE numero_de_votacao = %s", (numero,))
-    resultado = cursor.fetchone()
+    connection, cursor = get_cursor()
+    cursor.execute("SELECT id FROM candidatos WHERE numero_de_votacao = %s", (number ,))
+    result  = cursor.fetchone()
 
-    if resultado is None:
+    if result  is None:
         print("Candidato não encontrado!")
         cursor.close()
-        conexao.close()
+        connection.close()
         return
 
     # Só pede os dados se o candidato existir
-    nome    = input("Novo nome: ")
-    partido = input("Novo partido: ")
+    name = input("Novo nome: ")
+    party = input("Novo partido: ")
 
     cursor.execute(
         "UPDATE candidatos SET nome = %s, partido = %s WHERE numero_de_votacao = %s",
-        (nome, partido, numero)
+        (name, party, number )
     )
-    conexao.commit()
+    connection.commit()
 
     print("Candidato atualizado com sucesso!")
     cursor.close()
-    conexao.close()
+    connection.close()
