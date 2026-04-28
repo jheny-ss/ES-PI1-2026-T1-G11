@@ -1,5 +1,6 @@
 from database.connection import get_cursor
 from models.voting import generate_access_key
+from models.validators.cpf_validation import validate_cpf
 from models.validators.voter_registration_validation import registration_validation
 
 def list_electors():
@@ -38,6 +39,16 @@ def create_elector(name, cpf, voter_id, access_key, is_poll_worker):
     """
     Cadastra um novo eleitor.
     """
+    # Valida o CPF
+    if not validate_cpf(cpf):
+      print("CPF inválido!")
+      return
+
+    # Verifica duplicidade
+    if elector_exists(cpf, voter_id):
+        print("CPF ou título já cadastrado!")
+        return
+
     connection, cursor = get_cursor()
 
     sql = """
@@ -74,6 +85,11 @@ def update_elector():
     Edita eleitor pelo CPF.
     """
     cpf = input("CPF do eleitor: ")
+
+    # Valida o CPF
+    if not validate_cpf(cpf):
+      print("CPF inválido!")
+      return
 
     connection, cursor = get_cursor()
     cursor.execute("SELECT id FROM eleitores WHERE cpf = %s", (cpf,))

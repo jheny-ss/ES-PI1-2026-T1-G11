@@ -2,6 +2,7 @@ from models.elector import *
 from models.candidate import *
 from models.voting import *
 from models.validators.voter_registration_validation import registration_validation
+from models.validators.cpf_validation import validate_cpf
 from views.menus import *
 
 # =========================
@@ -87,12 +88,23 @@ def handle_electors():
             case 5:
                 name = input("Nome: ")
                 cpf = input("CPF: ")
+
+                # Validação imediata do CPF
+                if not validate_cpf(cpf):
+                  print("CPF inválido!")
+                  input("\nENTER para continuar...")
+                  continue
+
                 voter_id = input("Título: ")
-                # Valida o título de eleitor 
+
+                # Valida o título de eleitor
                 if not registration_validation(voter_id):
                     print("Título de eleitor inválido!")
+
+                # Verifica duplicidade
                 elif elector_exists(cpf, voter_id):
                     print("CPF ou título já cadastrado!")
+
                 else:
                     is_poll_worker_input = input("É mesário? (Sim/Não): ")
                     is_poll_worker = True if is_poll_worker_input == "Sim" else False
