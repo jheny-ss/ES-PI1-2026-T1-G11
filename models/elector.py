@@ -1,6 +1,6 @@
 from database.connection import get_cursor
 from models.voting import generate_access_key
-
+from models.validators.voter_registration_validation import registration_validation
 
 def list_electors():
     """
@@ -85,26 +85,41 @@ def update_elector():
         connection.close()
         return
 
-    # Só pede os dados se o eleitor existir
-    name   = input("Novo nome: ")
+    name = input("Novo nome: ")
     voter_id = input("Novo título: ")
-    access_key  = input("Nova chave: ")
+
+    # Valida o título antes de continuar
+    if not registration_validation(voter_id):
+        print("Título de eleitor inválido!")
+        cursor.close()
+        connection.close()
+        return
+
+    # Verifica se o novo título já pertence a outro eleitor
+    cursor.execute("""
+        SELECT id FROM eleitores
+        WHERE titulo_eleitor = %s AND cpf != %s
+    """, (voter_id, cpf))
+    if cursor.fetchone():
+        print("Título já cadastrado para outro eleitor!")
+        cursor.close()
+        connection.close()
+        return
+
+    access_key = input("Nova chave: ")
 
     is_poll_worker_input = ""
-    while is_poll_worker_input != "Sim" and is_poll_worker_input != "Não":
+    while is_poll_worker_input not in ["Sim", "Não"]:
         is_poll_worker_input = input("Status de Mesário (Sim/Não): ")
         if is_poll_worker_input not in ["Sim", "Não"]:
             print("Status inválido!")
             input("\nPressione ENTER para corrigir...")
-        else:
-            if is_poll_worker_input == "Sim":
-                is_poll_worker = True
-            else:
-                is_poll_worker = False
+
+    is_poll_worker = True if is_poll_worker_input == "Sim" else False
 
     cursor.execute(
-    "UPDATE eleitores SET nome = %s, titulo_eleitor = %s, chave_acesso = %s, status_mesario = %s WHERE cpf = %s",
-    (name, voter_id, access_key, is_poll_worker, cpf)
+        "UPDATE eleitores SET nome = %s, titulo_eleitor = %s, chave_acesso = %s, status_mesario = %s WHERE cpf = %s",
+        (name, voter_id, access_key, is_poll_worker, cpf)
     )
     connection.commit()
 

@@ -1,4 +1,6 @@
 def registration_validation(registration_card):
+    if not registration_card.isdigit():  # Verifica se o título contém apenas números reais
+        return False
     if len(registration_card) != 12:
         return False
     
@@ -12,7 +14,7 @@ def registration_validation(registration_card):
     for i in range(8):
         sum1 += int(n_sequence[i]) * weight[i]
     
-    rest = sum % 11
+    rest = sum1 % 11
     dv1 = 0 if rest >= 10 else rest
 
     if uf in ["01", "02"]:

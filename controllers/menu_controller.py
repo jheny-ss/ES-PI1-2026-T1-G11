@@ -1,7 +1,7 @@
 from models.elector import *
 from models.candidate import *
 from models.voting import *
-
+from models.validators.voter_registration_validation import registration_validation
 from views.menus import *
 
 # =========================
@@ -89,7 +89,9 @@ def handle_electors():
                 cpf = input("CPF: ")
                 voter_id = input("Título: ")
 
-                if elector_exists(cpf, voter_id):
+                if not registration_validation(voter_id):
+                    print("Título de eleitor inválido!")
+                elif elector_exists(cpf, voter_id):
                     print("CPF ou título já cadastrado!")
                 else:
                     is_poll_worker_input = input("É mesário? (Sim/Não): ")
