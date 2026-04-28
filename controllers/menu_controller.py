@@ -88,7 +88,7 @@ def handle_electors():
                 name = input("Nome: ")
                 cpf = input("CPF: ")
                 voter_id = input("Título: ")
-
+                # Valida o título de eleitor 
                 if not registration_validation(voter_id):
                     print("Título de eleitor inválido!")
                 elif elector_exists(cpf, voter_id):
