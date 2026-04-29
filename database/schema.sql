@@ -27,7 +27,7 @@ CREATE TABLE eleitores (
     chave_acesso    VARCHAR(100) NOT NULL UNIQUE,        -- criptografado com Cifra de Hill 
     status_votacao  BOOLEAN NOT NULL DEFAULT FALSE,      -- FALSE = não votou, TRUE = já votou
     status_mesario  BOOLEAN NOT NULL DEFAULT FALSE,      -- FALSE = eleitor comum, TRUE = mesário
-    data_hora_voto  DATETIME NULL DEFAULT NULL           -- preenchido no momento do voto 
+    data_hora_voto  DATE NULL DEFAULT (CURRENT_DATE)           -- preenchido no momento do voto 
 );
 
 /**
@@ -55,7 +55,7 @@ CREATE TABLE votacao (
     id                      INT AUTO_INCREMENT PRIMARY KEY,
     protocolo_criptografado VARCHAR(100) NOT NULL UNIQUE, -- comprovante embaralhado
     id_candidato            INT NULL, -- NULL significa voto nulo
-    data_voto               DATE NOT NULL DEFAULT (CURRENT_DATE), -- sem hora para evitar rastreamento, preservando ao max o anonimato
+    data_voto               DATETIME NOT NULL DEFAULT (CURRENT_DATE),
 
     FOREIGN KEY (id_candidato)
         REFERENCES candidatos(id)
