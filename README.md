@@ -26,6 +26,3 @@ Execute o seguinte comando no terminal:
 Caso utilize múltiplas versões do Python:
 - python -m pip install mysql-connector-python
 
-## Segurança e Anonimato: 
-Hora removida intencionalmente na tabela votacao para preservar o anonimato
-O timestamp exato permitiria correlacionar com a coluna data_hora_voto da tabela eleitores.
