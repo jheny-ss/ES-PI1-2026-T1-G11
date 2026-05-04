@@ -1,6 +1,9 @@
 from datetime import datetime
 import os
 
+from models.crypto.encrypt import encrypt_hill_cipher
+from models.crypto.decrypt import decrypt_hill_cipher
+
 
 # ============================================================
 # CONFIGURAÇÃO DOS ARQUIVOS
@@ -10,19 +13,25 @@ import os
 Diretório responsável por armazenar todos os arquivos
 de auditoria do sistema.
 """
-LOG_DIRECTORY = "logs"
+LOG_DIRECTORY = os.path.join("logs")
 
 """
 Arquivo responsável por armazenar os logs de ocorrências
 do sistema de votação.
 """
-LOG_FILE = f"{LOG_DIRECTORY}/system_logs.txt"
+LOG_FILE = os.path.join(
+    LOG_DIRECTORY,
+    "system_logs.txt"
+)
 
 """
 Arquivo responsável por armazenar os protocolos
 gerados durante o processo de votação.
 """
-PROTOCOL_FILE = f"{LOG_DIRECTORY}/voting_protocols.txt"
+PROTOCOL_FILE = os.path.join(
+    LOG_DIRECTORY,
+    "voting_protocols.txt"
+)
 
 
 # ============================================================
@@ -60,21 +69,28 @@ def register_log(message):
         message (str):
             Mensagem da ocorrência que será registrada.
 
+    Returns:
+        None
+
     Exemplo:
         register_log(
-            "ABERTURA: Votação iniciada com sucesso. Total de votos zerado."
+            "ABERTURA: Votação iniciada com sucesso. "
+            "Total de votos zerado."
         )
     """
 
     # Obtém data e hora atual do sistema
-    current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    current_date = datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
 
-    # Abre o arquivo em modo APPEND
-    # "a" adiciona conteúdo sem apagar o anterior
+    # Abre o arquivo em modo append
     with open(LOG_FILE, "a", encoding="utf-8") as file:
 
         # Escreve o log formatado
-        file.write(f"[{current_date}] {message}\n")
+        file.write(
+            f"[{current_date}] {message}\n"
+        )
 
 
 # ============================================================
@@ -87,11 +103,18 @@ def register_opening_log():
 
     Deve ser executado após:
     - validação do mesário
-    - realização da zerésima
+    - realização da zerézima
+
+    Args:
+        None
+
+    Returns:
+        None
     """
 
     register_log(
-        "ABERTURA: Votação iniciada com sucesso. Total de votos zerado."
+        "ABERTURA: Votação iniciada com sucesso. "
+        "Total de votos zerado."
     )
 
 
@@ -102,6 +125,12 @@ def register_access_denied_log():
     Deve ser executado quando:
     - mesário falhar autenticação
     - eleitor falhar identificação
+
+    Args:
+        None
+
+    Returns:
+        None
     """
 
     register_log(
@@ -115,6 +144,12 @@ def register_double_vote_log():
 
     Deve ser executado quando:
     - eleitor já possuir status_votacao = TRUE
+
+    Args:
+        None
+
+    Returns:
+        None
     """
 
     register_log(
@@ -128,6 +163,12 @@ def register_vote_success_log():
 
     Deve ser executado imediatamente após
     a confirmação do voto na urna.
+
+    Args:
+        None
+
+    Returns:
+        None
     """
 
     register_log(
@@ -141,6 +182,12 @@ def register_closing_log():
 
     Deve ser executado após:
     - fechamento realizado pelo mesário
+
+    Args:
+        None
+
+    Returns:
+        None
     """
 
     register_log(
@@ -160,14 +207,20 @@ def show_logs():
     - Lê o arquivo de logs
     - Exibe todas as ocorrências registradas
     - Mantém a ordem cronológica
+
+    Args:
+        None
+
+    Returns:
+        None
     """
 
     try:
 
-        # Abre o arquivo em modo leitura
+        # Abre arquivo em modo leitura
         with open(LOG_FILE, "r", encoding="utf-8") as file:
 
-            # Lê todas as linhas do arquivo
+            # Lê todas as linhas
             logs = file.readlines()
 
             # Verifica se existem logs
@@ -177,7 +230,7 @@ def show_logs():
 
             print("\n===== LOGS DO SISTEMA =====\n")
 
-            # Exibe cada log individualmente
+            # Exibe logs
             for log in logs:
                 print(log.strip())
 
@@ -191,21 +244,41 @@ def show_logs():
 
 def register_protocol(protocol):
     """
-    Registra um protocolo de votação.
+    Registra um protocolo de votação criptografado.
 
     O protocolo funciona como um comprovante
     oficial de que o voto foi computado.
+
+    Antes do armazenamento, o protocolo é
+    criptografado utilizando a Cifra de Hill,
+    conforme exigido no RNF006.
 
     Args:
         protocol (str):
             Código do protocolo gerado na votação.
 
+    Returns:
+        None
+
     Exemplo:
-        register_protocol("ABCD1234")
+        register_protocol("VRT269950134")
     """
 
-    with open(PROTOCOL_FILE, "a", encoding="utf-8") as file:
-        file.write(f"{protocol}\n")
+    # Criptografa protocolo
+    encrypted_protocol = encrypt_hill_cipher(
+        protocol
+    )
+
+    # Salva protocolo criptografado
+    with open(
+        PROTOCOL_FILE,
+        "a",
+        encoding="utf-8"
+    ) as file:
+
+        file.write(
+            f"{encrypted_protocol}\n"
+        )
 
 
 # ============================================================
@@ -217,15 +290,26 @@ def show_protocols():
     Exibe todos os protocolos registrados.
 
     Funcionamento:
-    - Lê todos os protocolos salvos
+    - Lê protocolos criptografados
+    - Descriptografa os dados
     - Ordena alfabeticamente
-    - Exibe na tela
+    - Exibe no terminal
+
+    Args:
+        None
+
+    Returns:
+        None
     """
 
     try:
 
         # Abre arquivo em modo leitura
-        with open(PROTOCOL_FILE, "r", encoding="utf-8") as file:
+        with open(
+            PROTOCOL_FILE,
+            "r",
+            encoding="utf-8"
+        ) as file:
 
             # Lê protocolos
             protocols = file.readlines()
@@ -235,20 +319,37 @@ def show_protocols():
                 print("Nenhum protocolo encontrado!")
                 return
 
-            # Remove quebras de linha
+            # Remove quebra de linha
             protocols = [
                 protocol.strip()
                 for protocol in protocols
             ]
 
-            # Ordena alfabeticamente
-            protocols.sort()
+            # Descriptografa protocolos
+            decrypted_protocols = []
 
-            print("\n===== PROTOCOLOS DE VOTAÇÃO =====\n")
+            for protocol in protocols:
+
+                decrypted_protocol = (
+                    decrypt_hill_cipher(protocol)
+                )
+
+                decrypted_protocols.append(
+                    decrypted_protocol
+                )
+
+            # Ordena alfabeticamente
+            decrypted_protocols.sort()
+
+            print(
+                "\n===== PROTOCOLOS DE VOTAÇÃO =====\n"
+            )
 
             # Exibe protocolos
-            for protocol in protocols:
+            for protocol in decrypted_protocols:
                 print(protocol)
 
     except FileNotFoundError:
-        print("Arquivo de protocolos não encontrado!")
+        print(
+            "Arquivo de protocolos não encontrado!"
+        )

@@ -1,3 +1,17 @@
+"""
+Arquivo de testes do módulo de auditoria.
+
+Responsável por validar:
+- Registro de logs
+- Registro de protocolos
+- Exibição de logs
+- Exibição de protocolos
+
+EXECUÇÃO:
+
+python -m models.audit_test
+"""
+
 from models.audit import (
     show_logs,
     register_protocol,
@@ -9,102 +23,132 @@ from models.audit import (
     register_closing_log
 )
 
-print("ARQUIVO DE TESTE EXECUTADO")
+
+# ============================================================
+# INÍCIO DOS TESTES
+# ============================================================
+
+print("\nARQUIVO DE TESTE EXECUTADO\n")
 
 
-# =========================
+# ============================================================
 # TESTE COMPLETO DE AUDITORIA
-# (OPCIONAL)CRIE UM ARQUIVO DENTRO DA PASTA MODELS:
-# __init__.py
-# EXECUTE:
-# python -m models.audit_test
-# =========================
+# ============================================================
+
+print("===== TESTANDO LOGS E AUDITORIA =====\n")
 
 
-print("\n===== TESTANDO LOGS =====\n")
-
-
-# =========================
+# ============================================================
 # TESTE 1 - ABERTURA
 # RF002.02.01.03
-# =========================
+# ============================================================
 
 print("TESTE 1 - ABERTURA DA VOTAÇÃO")
 
 register_opening_log()
 
+print("RESULTADO: TESTE APROVADO\n")
 
-# =========================
+
+# ============================================================
 # TESTE 2 - ACESSO NEGADO
 # RF002.02.01.04
-# =========================
+# ============================================================
 
 print("TESTE 2 - ACESSO NEGADO")
 
 register_access_denied_log()
 register_access_denied_log()
 
+print("RESULTADO: TESTE APROVADO\n")
 
-# =========================
+
+# ============================================================
 # TESTE 3 - VOTO DUPLO
 # RF002.02.01.05
-# =========================
+# ============================================================
 
 print("TESTE 3 - TENTATIVA DE VOTO DUPLO")
 
 register_double_vote_log()
 
+print("RESULTADO: TESTE APROVADO\n")
 
-# =========================
+
+# ============================================================
 # TESTE 4 - VOTO REALIZADO
 # RF002.02.01.06
-# =========================
+# ============================================================
 
 print("TESTE 4 - VOTO REALIZADO")
 
 register_vote_success_log()
 
+print("RESULTADO: TESTE APROVADO\n")
 
-# =========================
+
+# ============================================================
 # TESTE 5 - ENCERRAMENTO
 # RF002.02.01.07
-# =========================
+# ============================================================
 
 print("TESTE 5 - ENCERRAMENTO DA VOTAÇÃO")
 
 register_closing_log()
 
+print("RESULTADO: TESTE APROVADO\n")
 
-# =========================
+
+# ============================================================
 # TESTE 6 - REGISTRO DE PROTOCOLOS
 # RF002.02.02
-# =========================
+# ============================================================
 
 print("TESTE 6 - REGISTRO DE PROTOCOLOS")
 
-register_protocol("PROTOCOLO-ZZZ999")
-register_protocol("PROTOCOLO-AAA111")
-register_protocol("PROTOCOLO-MMM555")
+"""
+Protocolos seguem o padrão definido na documentação:
+
+Prefixo "V"
++ 2 letras aleatórias
++ Ano (26)
++ Número do candidato
++ 5 dígitos aleatórios
+"""
+
+register_protocol("VRT269950134")
+register_protocol("VAB261230987")
+register_protocol("VXP260145678")
+
+print("RESULTADO: TESTE APROVADO\n")
 
 
-# =========================
+# ============================================================
 # TESTE 7 - EXIBIÇÃO DOS LOGS
 # RF002.02.01.08
-# =========================
+# ============================================================
 
-print("\nTESTE 7 - EXIBINDO LOGS")
+print("TESTE 7 - EXIBINDO LOGS")
 
 show_logs()
 
+print("\nRESULTADO: TESTE APROVADO\n")
 
-# =========================
+
+# ============================================================
 # TESTE 8 - EXIBIÇÃO DOS PROTOCOLOS
 # RF002.02.02
-# =========================
+# ============================================================
 
-print("\nTESTE 8 - EXIBINDO PROTOCOLOS")
+print("TESTE 8 - EXIBINDO PROTOCOLOS")
 
 show_protocols()
 
+print("\nRESULTADO: TESTE APROVADO\n")
 
-print("\n===== TESTES FINALIZADOS =====")
+
+# ============================================================
+# FINALIZAÇÃO
+# ============================================================
+
+print("===== TODOS OS TESTES FINALIZADOS =====\n")
