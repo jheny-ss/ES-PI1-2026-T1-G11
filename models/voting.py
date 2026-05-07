@@ -2,6 +2,7 @@ import random
 import string
 from datetime import datetime
 
+from models.candidate import get_candidate_by_number
 from database.connection import get_cursor
 from models.crypto.decrypt import decrypt_hill_cipher
 from models.crypto.encrypt import encrypt_hill_cipher
@@ -153,31 +154,6 @@ def identify_voter(voter_id, cpf_partial, access_key):
     if not decrypted_cpf.startswith(cpf_partial):
         return None
 
-    return result
-
-
-
-def get_candidate_by_number(number):
-    """
-    Busca um candidato pelo número.
-
-    Args:
-        number (str): Número do candidato digitado.
-
-    Returns:
-        dict or None: Dados do candidato ou None se não existir.
-    """
-    connection, cursor = get_cursor()
-
-    cursor.execute("""
-        SELECT id, nome, numero_de_votacao, partido
-        FROM candidatos
-        WHERE numero_de_votacao = %s
-    """, (number,))
-
-    result = cursor.fetchone()
-    cursor.close()
-    connection.close()
     return result
 
 
