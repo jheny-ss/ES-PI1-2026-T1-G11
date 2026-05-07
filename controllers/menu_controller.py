@@ -5,6 +5,7 @@ from models.validators.voter_registration_validation import registration_validat
 from models.validators.cpf_validation import validate_cpf
 from models.validators.name_validation import validate_full_name
 from views.menus import *
+from models.voting import cast_vote
 
 # =========================
 # SISTEMA PRINCIPAL
@@ -305,30 +306,31 @@ def handle_voting():
 # =========================
 
 def handle_open_voting():
+    voting_open = True
     """
     Controla o fluxo da votação aberta.
 
     Permite registrar votos e encerrar o processo de votação.
     """
-    while True:
+    while voting_open:
         choice = open_voting_menu()
 
         match choice:
             case 1:
-                print("Processando voto...")
+                cast_vote()
 
             case 2:
                 print("Encerrando votação...")
-                return
+                voting_open = False
 
             case 3:
-                return
+                voting_open = False
 
             case _:
                 print("Opção inválida!")
 
-        input("\nENTER para continuar...")
-
+        if voting_open:
+            input("\nENTER para continuar...")
 
 # =========================
 # RESULTADOS
