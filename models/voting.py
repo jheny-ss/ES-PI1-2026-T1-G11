@@ -307,7 +307,7 @@ def cast_vote():
 
 
 
-def finalize_voting():
+def finalize_voting(cpf_partial, voter_id, access_key):
     """
     Finaliza a votação, impedindo novos votos.
 

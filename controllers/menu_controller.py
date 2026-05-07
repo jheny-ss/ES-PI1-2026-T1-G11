@@ -320,8 +320,10 @@ def handle_open_voting():
                 cast_vote()
 
             case 2:
-                finalize_voting()
-                print("Votação encerrada!")
+                cpf = input("CPF do mesário: ")
+                voter_id = input("Título do mesário: ")
+                access_key = input("Chave de acesso: ")
+                finalize_voting(cpf, voter_id, access_key)
 
             case 3:
                 voting_open = False
