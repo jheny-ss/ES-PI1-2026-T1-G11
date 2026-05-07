@@ -1,1 +1,3 @@
 [2026-05-07 09:56:10] SUCESSO: Voto realizado com sucesso.
+[2026-05-07 15:36:29] SUCESSO: Voto realizado com sucesso.
+[2026-05-07 15:50:11] SUCESSO: Voto realizado com sucesso.

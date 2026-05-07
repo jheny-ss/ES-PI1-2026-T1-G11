@@ -320,11 +320,12 @@ def handle_open_voting():
                 cast_vote()
 
             case 2:
-                cpf = input("CPF do mesário: ")
+                cpf_partial = input("4 primeiros dígitos do CPF: ")
                 voter_id = input("Título do mesário: ")
                 access_key = input("Chave de acesso: ")
-                finalize_voting(cpf, voter_id, access_key)
 
+                if finalize_voting(cpf_partial, voter_id, access_key):
+                    voting_open = False 
             case 3:
                 voting_open = False
 

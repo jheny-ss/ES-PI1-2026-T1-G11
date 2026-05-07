@@ -10,6 +10,7 @@ from models.audit import (
     register_double_vote_log,
     register_vote_success_log,
     register_protocol
+    #register_closing_log
 )
 
 def validate_poll_worker(cpf_partial, voter_id, access_key):
@@ -310,14 +311,34 @@ def cast_vote():
 def finalize_voting(cpf_partial, voter_id, access_key):
     """
     Finaliza a votação, impedindo novos votos.
+    Valida o mesário e executa o encerramento da votação.
 
-    Esta função pode ser chamada para encerrar a votação oficialmente.
+    Args:
+        cpf_partial (str): 4 primeiros dígitos do CPF do mesário.
+        voter_id (str): Título de eleitor do mesário.
+        access_key (str): Chave de acesso do mesário.
 
-    Apenas mesários podem acessar a função de encerramento.
-
+    Returns:
+        bool: True se o encerramento foi autorizado, False caso contrário.
     """
-    if validate_poll_worker(cpf_partial, voter_id, access_key) == True and voting_open == True:
-        print("Votação encerrada com sucesso!")
-        voting_open = False
-    else:
-        print("Acesso negado! Apenas mesários autorizados podem encerrar a votação.")
+    if not validate_poll_worker(cpf_partial, voter_id, access_key):
+        print("Acesso negado! Apenas mesários podem encerrar a votação.")
+        register_access_denied_log()
+        return False
+
+    confirm = input("Deseja realmente encerrar a votação? (Sim/Não): ").strip()
+
+    if confirm != "Sim":
+        print("Encerramento cancelado.")
+        return False
+
+    access_key_confirm = input("Digite sua chave de acesso novamente: ").strip()
+
+    if not validate_poll_worker(cpf_partial, voter_id, access_key_confirm):
+        print("Chave inválida! Encerramento cancelado.")
+        register_access_denied_log()
+        return False
+
+    print("Votação encerrada com sucesso!")
+    #register_closing_log()
+    return True
