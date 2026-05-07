@@ -67,9 +67,6 @@ def create_candidate(name, number, party):
 
 
 def delete_candidate(number):
-    """
-    Remove candidato pelo número.
-    """
     connection, cursor = get_cursor()
 
     cursor.execute(
@@ -78,7 +75,10 @@ def delete_candidate(number):
     )
     connection.commit()
 
-    print("Candidato removido!")
+    if cursor.rowcount > 0:
+        print("Candidato removido!")
+    else:
+        print("Candidato não encontrado!")
 
     cursor.close()
     connection.close()
@@ -87,28 +87,36 @@ def update_candidate():
     """
     Edita candidato pelo número.
     """
-    number  = input("Número do candidato: ")
-
     connection, cursor = get_cursor()
-    cursor.execute("SELECT id FROM candidatos WHERE numero_de_votacao = %s", (number ,))
-    result  = cursor.fetchone()
 
-    if result  is None:
-        print("Candidato não encontrado!")
-        cursor.close()
-        connection.close()
-        return
+    found = False
+    number = None
 
-    # Só pede os dados se o candidato existir
+    while not found:
+        number = input("Número do candidato: ")
+
+        cursor.execute(
+            "SELECT id FROM candidatos WHERE numero_de_votacao = %s",
+            (number,)
+        )
+        result = cursor.fetchone()
+
+        if result:
+            found = True
+        else:
+            print("Candidato não encontrado! Tente novamente.\n")
+
+    # Só chega aqui se EXISTE candidato
     name = input("Novo nome: ")
     party = input("Novo partido: ")
 
     cursor.execute(
         "UPDATE candidatos SET nome = %s, partido = %s WHERE numero_de_votacao = %s",
-        (name, party, number )
+        (name, party, number)
     )
     connection.commit()
 
     print("Candidato atualizado com sucesso!")
+
     cursor.close()
     connection.close()

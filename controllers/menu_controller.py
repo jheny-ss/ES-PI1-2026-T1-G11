@@ -3,6 +3,7 @@ from models.candidate import *
 from models.voting import *
 from models.validators.voter_registration_validation import registration_validation
 from models.validators.cpf_validation import validate_cpf
+from models.validators.name_validation import validate_full_name
 from views.menus import *
 from models.voting import cast_vote
 
@@ -69,58 +70,118 @@ def handle_electors():
     """
     while True:
         choice = elector_menu()
-
         match choice:
             case 1:
                 list_electors()
 
             case 2:
                 cpf = input("CPF: ")
+                while not validate_cpf(cpf):
+                    print("CPF inválido!")
+                    cpf = input("CPF: ")
+
                 elector = get_elector_by_cpf(cpf)
                 print(elector if elector else "Não encontrado!")
 
             case 3:
-                cpf = input("CPF: ")
+                cpf = input("CPF do eleitor: ")
+                while not validate_cpf(cpf):
+                    print("CPF inválido!")
+                    cpf = input("CPF do eleitor: ")
+
                 delete_elector(cpf)
 
             case 4:
-                update_elector()
+                elector = None
+
+                while not elector:
+
+                    cpf = input("CPF do eleitor: ")
+
+                    while not validate_cpf(cpf):
+                        print("CPF inválido!")
+                        cpf = input("CPF do eleitor: ")
+
+                    elector = get_elector_by_cpf(cpf)
+
+                    if not elector:
+                        print("Eleitor não encontrado!")
+
+                name = input("Novo nome: ")
+
+                while not validate_full_name(name):
+                    print("Nome inválido!")
+                    name = input("Novo nome: ")
+
+                voter_id = input("Novo título: ")
+
+                while not registration_validation(voter_id):
+                    print("Título inválido!")
+                    voter_id = input("Novo título: ")
+
+                is_poll_worker_input = input("Status de Mesário (Sim/Não): ")
+
+                while is_poll_worker_input not in ["Sim", "Não"]:
+                    print("Entrada inválida!")
+                    is_poll_worker_input = input("Status de Mesário (Sim/Não): ")
+
+                is_poll_worker = is_poll_worker_input == "Sim"
+
+                update_elector_db(cpf, name, voter_id, is_poll_worker)
+
+                print("Eleitor atualizado com sucesso!")
 
             case 5:
+                
                 name = input("Nome: ")
+                while not validate_full_name(name):
+                    print("Nome inválido! Digite nome e sobrenome.")
+                    name = input("Nome: ")
+
+               
                 cpf = input("CPF: ")
+                while not validate_cpf(cpf):
+                    print("CPF inválido!")
+                    cpf = input("CPF: ")
 
-                # Validação imediata do CPF
-                if not validate_cpf(cpf):
-                  print("CPF inválido!")
-                  input("\nENTER para continuar...")
-                  continue
-
+                
                 voter_id = input("Título: ")
+                while not registration_validation(voter_id):
+                    print("Título inválido!")
+                    voter_id = input("Título: ")
 
-                # Valida o título de eleitor
-                if not registration_validation(voter_id):
-                    print("Título de eleitor inválido!")
+                connection, cursor = get_cursor()
 
-                # Verifica duplicidade
-                elif elector_exists(cpf, voter_id):
-                    print("CPF ou título já cadastrado!")
+                try:
+                    if elector_exists(cursor, cpf, voter_id):
+                        print("CPF ou título já cadastrado!")
+                        continue
 
-                else:
+                    
                     is_poll_worker_input = input("É mesário? (Sim/Não): ")
-                    is_poll_worker = True if is_poll_worker_input == "Sim" else False
+                    while is_poll_worker_input not in ["Sim", "Não"]:
+                        print("Entrada inválida!")
+                        is_poll_worker_input = input("É mesário? (Sim/Não): ")
 
-                    access_key = generate_access_key()
-                    print("Chave:", access_key)
+                    is_poll_worker = is_poll_worker_input == "Sim"
 
-                    create_elector(name, cpf, voter_id, access_key, is_poll_worker)
+                    access_key = generate_access_key(name)
+                    print("Chave gerada:", access_key)
+
+                    create_elector(cursor, name, cpf, voter_id, access_key, is_poll_worker)
+                    connection.commit()
+
+                    print("Eleitor cadastrado com sucesso!")
+
+                finally:
+                    cursor.close()
+                    connection.close()
 
             case 6:
                 return
 
             case _:
                 print("Opção inválida!")
-
         input("\nENTER para continuar...")
 
 
@@ -131,24 +192,57 @@ def handle_electors():
 def handle_candidates():
     """
     Controla o fluxo do menu de candidatos.
-
-    Permite listar, buscar, remover, editar e cadastrar candidatos.
     """
+
     while True:
-        choice = candidate_menu()
+        while True:
+            choice = candidate_menu()
+
+            if isinstance(choice, int) and 1 <= choice <= 6:
+                break
+
+            print("Opção inválida! Digite novamente.\n")
 
         match choice:
             case 1:
                 list_candidates()
 
             case 2:
-                number = input("Número: ")
-                candidate = get_candidate_by_number(number)
-                print(candidate if candidate else "Não encontrado!")
+                while True:
+                    number = input("Número (ou 0 para voltar): ")
+
+                    if number == "0":
+                        break
+
+                    candidate = get_candidate_by_number(number)
+
+                    if candidate:
+                        print(candidate)
+                        break
+                    else:
+                        print("Não encontrado! Tente novamente.\n")
 
             case 3:
-                number = input("Número: ")
-                delete_candidate(number)
+                    while True:
+                        number = input("Número (ou 0 para voltar): ")
+
+                        if number == "0":
+                            break
+
+                        candidate = get_candidate_by_number(number)
+
+                        if not candidate:
+                            print("Candidato não encontrado!\n")
+                            continue
+
+                        confirm = input("Confirma remoção? (s/n): ").lower()
+
+                        if confirm == "s":
+                            delete_candidate(number)
+                        else:
+                            print("Remoção cancelada.")
+
+                        break
 
             case 4:
                 update_candidate()
@@ -163,11 +257,7 @@ def handle_candidates():
             case 6:
                 return
 
-            case _:
-                print("Opção inválida!")
-
         input("\nENTER para continuar...")
-
 
 # =========================
 # VOTAÇÃO

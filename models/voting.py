@@ -1,18 +1,15 @@
 import random
-import string
-from database.connection import get_cursor
-import random
-import string
-from models.crypto.encrypt import encrypt_hill_cipher
-from models.crypto.decrypt import decrypt_hill_cipher
 from datetime import datetime
+
+from database.connection import get_cursor
+from models.crypto.decrypt import decrypt_hill_cipher
+from models.crypto.encrypt import encrypt_hill_cipher
 from models.audit import (
     register_access_denied_log,
     register_double_vote_log,
     register_vote_success_log,
     register_protocol
 )
-
 
 def validate_poll_worker(cpf_partial, voter_id, access_key):
     """
@@ -29,35 +26,38 @@ def validate_poll_worker(cpf_partial, voter_id, access_key):
     connection, cursor = get_cursor()
 
     cursor.execute("""
-        SELECT status_mesario
+        SELECT status_mesario, cpf
         FROM eleitores
-        WHERE LEFT(cpf, 4) = %s
-        AND titulo_eleitor = %s
-        AND chave_acesso = %s
-    """, (cpf_partial, voter_id, access_key))
+        WHERE titulo_eleitor = %s
+          AND chave_acesso = %s
+    """, (voter_id, access_key))
 
     result = cursor.fetchone()
 
     cursor.close()
     connection.close()
 
-    return result is not None and bool(result["status_mesario"])
+    if result is None:
+        return False
+
+    cpf_decrypted = decrypt_hill_cipher(result["cpf"])
+    cpf_matches = cpf_decrypted.startswith(cpf_partial)
+
+    return cpf_matches and bool(result["status_mesario"])
 
 
+def generate_access_key(full_name):
+    name_parts = full_name.strip().upper().split()
 
-def generate_access_key():
-   """
-    Gera uma chave de acesso aleatória.
+    first_name = name_parts[0]
+    second_name = name_parts[1]
 
-    A chave é composta por letras maiúsculas e números,
-    com tamanho fixo de 6 caracteres.
+    letters = first_name[:2] + second_name[0]
+    numbers = str(random.randint(1000, 9999))
+    access_key = letters + numbers
 
-    Returns:
-        str: Chave de acesso gerada.
-    """
-   access_key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-   return access_key
-
+    return access_key
+    
 def zeresima():
     """
     Realiza a zerésima da votação.

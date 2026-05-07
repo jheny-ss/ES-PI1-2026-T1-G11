@@ -2,158 +2,113 @@ from database.connection import get_cursor
 from models.voting import generate_access_key
 from models.validators.cpf_validation import validate_cpf
 from models.validators.voter_registration_validation import registration_validation
+from models.crypto.decrypt import decrypt_hill_cipher
+from models.crypto.encrypt import encrypt_hill_cipher
 
 def list_electors():
-    """
-    Lista todos os eleitores.
-    """
     connection, cursor = get_cursor()
 
-    cursor.execute("SELECT id, nome, titulo_eleitor, chave_acesso, status_mesario FROM eleitores")
+    try:
+        cursor.execute("""
+            SELECT id, nome, cpf, titulo_eleitor, chave_acesso, status_mesario
+            FROM eleitores
+        """)
 
-    print("\nLISTA DE ELEITORES:")
+        print("\nLISTA DE ELEITORES:")
 
-    for elector in cursor.fetchall():
-        print(f"{elector['id']} - {elector['nome']} - {elector['titulo_eleitor']} - {elector['chave_acesso']} - {elector['status_mesario']}")
-
-    cursor.close()
-    connection.close()
+        for elector in cursor.fetchall():
+           
+            cpf = decrypt_hill_cipher(elector['cpf'])
+            chave = decrypt_hill_cipher(elector['chave_acesso'])
+            print(f"{elector['id']} - {elector['nome']} - {elector['titulo_eleitor']} - {chave} - {elector['status_mesario']}")
+    finally:
+        cursor.close()
+        connection.close()
 
 
 def get_elector_by_cpf(cpf):
-    """
-    Busca eleitor pelo CPF.
-    """
     connection, cursor = get_cursor()
 
-    cursor.execute("SELECT * FROM eleitores WHERE cpf = %s", (cpf,))
-    elector = cursor.fetchone()
+    try:
+        cpf = encrypt_hill_cipher(cpf)
 
-    cursor.close()
-    connection.close()
+        cursor.execute(
+            "SELECT * FROM eleitores WHERE cpf = %s",
+            (cpf,)
+        )
 
-    return elector
+        elector = cursor.fetchone()
+
+        if elector:
+            elector['cpf'] = decrypt_hill_cipher(elector['cpf'])
+            elector['chave_acesso'] = decrypt_hill_cipher(elector['chave_acesso'])
+
+        return elector
+
+    finally:
+        cursor.close()
+        connection.close()
 
 
-def create_elector(name, cpf, voter_id, access_key, is_poll_worker):
-    """
-    Cadastra um novo eleitor.
-    """
-    # Valida o CPF
-    if not validate_cpf(cpf):
-      print("CPF inválido!")
-      return
 
-    # Verifica duplicidade
-    if elector_exists(cpf, voter_id):
-        print("CPF ou título já cadastrado!")
-        return
-
-    connection, cursor = get_cursor()
-
+def create_elector(cursor, name, cpf, voter_id, access_key, is_poll_worker):
     sql = """
-        INSERT INTO eleitores (nome, cpf, titulo_eleitor,chave_acesso,status_mesario)
-        VALUES (%s, %s, %s,%s,%s)
+        INSERT INTO eleitores (nome, cpf, titulo_eleitor, chave_acesso, status_mesario)
+        VALUES (%s, %s, %s, %s, %s)
     """
-
+    cpf = encrypt_hill_cipher(cpf)
+    access_key = encrypt_hill_cipher(access_key)
     cursor.execute(sql, (name, cpf, voter_id, access_key, is_poll_worker))
-    connection.commit()
-
-    print("Eleitor cadastrado!")
-
-    cursor.close()
-    connection.close()
 
 
 def delete_elector(cpf):
-    """
-    Remove eleitor pelo CPF.
-    """
     connection, cursor = get_cursor()
 
-    cursor.execute("DELETE FROM eleitores WHERE cpf = %s", (cpf,))
-    connection.commit()
+    try:
+        cpf = encrypt_hill_cipher(cpf)
 
-    print("Eleitor removido!")
+        cursor.execute(
+            "DELETE FROM eleitores WHERE cpf = %s",
+            (cpf,)
+        )
 
-    cursor.close()
-    connection.close()
+        connection.commit()
 
+        if cursor.rowcount > 0:
+            print("Eleitor removido!")
+        else:
+            print("Eleitor não encontrado!")
 
-def update_elector():
-    """
-    Edita eleitor pelo CPF.
-    """
-    cpf = input("CPF do eleitor: ")
+    finally:
+        cursor.close()
+        connection.close()
 
-    # Valida o CPF
-    if not validate_cpf(cpf):
-      print("CPF inválido!")
-      return
-
+def update_elector_db(cpf, name, voter_id, is_poll_worker):
     connection, cursor = get_cursor()
-    cursor.execute("SELECT id FROM eleitores WHERE cpf = %s", (cpf,))
-    result = cursor.fetchone()
 
-    if result is None:
-        print("Eleitor não encontrado!")
+    try:
+        cpf = encrypt_hill_cipher(cpf)
+
+        cursor.execute("""
+            UPDATE eleitores
+            SET nome = %s, titulo_eleitor = %s, status_mesario = %s
+            WHERE cpf = %s
+        """, (name, voter_id, is_poll_worker, cpf))
+
+        connection.commit()
+
+    finally:
         cursor.close()
         connection.close()
-        return
 
-    name = input("Novo nome: ")
-    voter_id = input("Novo título: ")
 
-    # Valida o título antes de continuar
-    if not registration_validation(voter_id):
-        print("Título de eleitor inválido!")
-        cursor.close()
-        connection.close()
-        return
 
-    # Verifica se o novo título já pertence a outro eleitor
-    cursor.execute("""
-        SELECT id FROM eleitores
-        WHERE titulo_eleitor = %s AND cpf != %s
-    """, (voter_id, cpf))
-    if cursor.fetchone():
-        print("Título já cadastrado para outro eleitor!")
-        cursor.close()
-        connection.close()
-        return
-
-    access_key = input("Nova chave: ")
-
-    is_poll_worker_input = ""
-    while is_poll_worker_input not in ["Sim", "Não"]:
-        is_poll_worker_input = input("Status de Mesário (Sim/Não): ")
-        if is_poll_worker_input not in ["Sim", "Não"]:
-            print("Status inválido!")
-            input("\nPressione ENTER para corrigir...")
-
-    is_poll_worker = True if is_poll_worker_input == "Sim" else False
-
-    cursor.execute(
-        "UPDATE eleitores SET nome = %s, titulo_eleitor = %s, chave_acesso = %s, status_mesario = %s WHERE cpf = %s",
-        (name, voter_id, access_key, is_poll_worker, cpf)
-    )
-    connection.commit()
-
-    print("Eleitor atualizado com sucesso!")
-    cursor.close()
-    connection.close()
-
-def elector_exists(cpf, voter_id):
-    connection, cursor = get_cursor()
+def elector_exists(cursor, cpf, voter_id):
+    cpf = encrypt_hill_cipher(cpf)
 
     cursor.execute("""
-        SELECT * FROM eleitores
+        SELECT 1 FROM eleitores
         WHERE cpf = %s OR titulo_eleitor = %s
     """, (cpf, voter_id))
 
-    result = cursor.fetchone()
-
-    cursor.close()
-    connection.close()
-
-    return result is not None
+    return cursor.fetchone() is not None
