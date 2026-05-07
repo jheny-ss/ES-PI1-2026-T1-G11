@@ -1,4 +1,5 @@
 import random
+import string
 from datetime import datetime
 
 from database.connection import get_cursor
@@ -13,7 +14,7 @@ from models.audit import (
 
 def validate_poll_worker(cpf_partial, voter_id, access_key):
     """
-    Valida se o usuário é um mesário (poll worker) autorizado.
+    Valida se o usuário é um mesário autorizado.
 
     Args:
         cpf_partial (str): Primeiros 4 dígitos do CPF.
@@ -25,25 +26,31 @@ def validate_poll_worker(cpf_partial, voter_id, access_key):
     """
     connection, cursor = get_cursor()
 
+    encrypted_key = encrypt_hill_cipher(access_key)
+
     cursor.execute("""
         SELECT status_mesario, cpf
         FROM eleitores
         WHERE titulo_eleitor = %s
           AND chave_acesso = %s
-    """, (voter_id, access_key))
+    """, (voter_id, encrypted_key))
 
     result = cursor.fetchone()
 
     cursor.close()
     connection.close()
 
+    # Título ou chave inválidos
     if result is None:
         return False
 
-    cpf_decrypted = decrypt_hill_cipher(result["cpf"])
-    cpf_matches = cpf_decrypted.startswith(cpf_partial)
+    # Verifica os 4 primeiros dígitos do CPF
+    decrypted_cpf = decrypt_hill_cipher(result["cpf"])
+    if not decrypted_cpf.startswith(cpf_partial):
+        return False
 
-    return cpf_matches and bool(result["status_mesario"])
+    # Verifica se é mesário
+    return bool(result["status_mesario"])
 
 
 def generate_access_key(full_name):
