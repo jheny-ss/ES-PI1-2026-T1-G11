@@ -304,3 +304,20 @@ def cast_vote():
         register_protocol(protocol)
     else:
         print("Erro ao registrar o voto. Tente novamente.")
+
+
+
+def finalize_voting():
+    """
+    Finaliza a votação, impedindo novos votos.
+
+    Esta função pode ser chamada para encerrar a votação oficialmente.
+
+    Apenas mesários podem acessar a função de encerramento.
+
+    """
+    if validate_poll_worker(cpf_partial, voter_id, access_key) == True and voting_open == True:
+        print("Votação encerrada com sucesso!")
+        voting_open = False
+    else:
+        print("Acesso negado! Apenas mesários autorizados podem encerrar a votação.")

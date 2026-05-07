@@ -320,8 +320,8 @@ def handle_open_voting():
                 cast_vote()
 
             case 2:
-                print("Encerrando votação...")
-                voting_open = False
+                finalize_voting()
+                print("Votação encerrada!")
 
             case 3:
                 voting_open = False
