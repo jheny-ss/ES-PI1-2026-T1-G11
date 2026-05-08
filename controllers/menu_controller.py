@@ -16,6 +16,11 @@ from models.utils.input_helpers import (
 )
 from views.menus import *
 from models.voting import cast_vote
+from models.audit import (
+    show_logs,
+    show_protocols,
+    register_opening_log
+)
 
 # =========================
 # SISTEMA PRINCIPAL
@@ -467,6 +472,8 @@ def handle_voting():
 
                     zeresima()
 
+                    register_opening_log()
+
                     handle_open_voting()
 
                 else:
@@ -615,10 +622,10 @@ def handle_audit():
         match choice:
 
             case 1:
-                print("Logs...")
+                show_logs()
 
             case 2:
-                print("Protocolos...")
+                show_protocols()
 
             case 3:
                 audit_running = False

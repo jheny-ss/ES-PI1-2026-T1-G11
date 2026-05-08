@@ -1,122 +1,316 @@
 from database.connection import get_cursor
 
+from models.audit import (
+    register_management_log,
+    register_error_log
+)
+
 
 def list_candidates():
     """
-    Lista todos os candidatos.
+    Lista todos os candidatos cadastrados.
+
+    Returns:
+        None
     """
+
     connection, cursor = get_cursor()
 
-    cursor.execute("SELECT * FROM candidatos")
+    try:
 
-    print("\n LISTA DE CANDIDATOS:")
-    for candidate  in cursor.fetchall():
-        print(f"{candidate['nome']} - {candidate['numero_de_votacao']} - {candidate['partido']}")
+        cursor.execute(
+            """
+            SELECT *
+            FROM candidatos
+            """
+        )
 
-    cursor.close()
-    connection.close()
+        candidates = cursor.fetchall()
+
+        print("\n===== LISTA DE CANDIDATOS =====\n")
+
+        if not candidates:
+
+            print("Nenhum candidato cadastrado!")
+            return
+
+        for candidate in candidates:
+
+            print(
+                f"{candidate['nome']} - "
+                f"{candidate['numero_de_votacao']} - "
+                f"{candidate['partido']}"
+            )
+
+    except Exception as error:
+
+        register_error_log(error)
+
+        print(
+            "Erro ao listar candidatos!"
+        )
+
+    finally:
+
+        cursor.close()
+        connection.close()
 
 
 def get_candidate_by_number(number):
     """
     Busca candidato pelo número.
+
+    Args:
+        number (str):
+            Número do candidato.
+
+    Returns:
+        dict | None
     """
+
     connection, cursor = get_cursor()
 
-    cursor.execute(
-        "SELECT * FROM candidatos WHERE numero_de_votacao = %s",
-        (number,)
-    )
+    try:
 
-    candidate = cursor.fetchone()
+        cursor.execute(
+            """
+            SELECT *
+            FROM candidatos
+            WHERE numero_de_votacao = %s
+            """,
+            (number,)
+        )
 
-    cursor.close()
-    connection.close()
+        return cursor.fetchone()
 
-    return candidate
+    except Exception as error:
+
+        register_error_log(error)
+
+        return None
+
+    finally:
+
+        cursor.close()
+        connection.close()
 
 
 def create_candidate(name, number, party):
     """
     Cadastra um novo candidato.
+
+    Args:
+        name (str):
+            Nome do candidato.
+
+        number (str):
+            Número eleitoral.
+
+        party (str):
+            Partido político.
+
+    Returns:
+        None
     """
 
     connection, cursor = get_cursor()
-    if number.isdigit():
-            cursor.execute("SELECT id FROM candidatos WHERE numero_de_votacao = %s", (number,))
-            result  = cursor.fetchone()
 
-            if result  is not None:
-                print("Número de candidato já existe!")
-                cursor.close()
-                connection.close()
-                return
+    try:
 
-    sql = """
-        INSERT INTO candidatos (nome, numero_de_votacao, partido)
-        VALUES (%s, %s, %s)
-    """
+        cursor.execute(
+            """
+            SELECT id
+            FROM candidatos
+            WHERE numero_de_votacao = %s
+            """,
+            (number,)
+        )
 
-    cursor.execute(sql, (name, number, party))
-    connection.commit()
+        result = cursor.fetchone()
 
-    print("Candidato cadastrado!")
+        if result is not None:
 
-    cursor.close()
-    connection.close()
+            print(
+                "Número de candidato já existe!"
+            )
+
+            return
+
+        cursor.execute(
+            """
+            INSERT INTO candidatos
+            (
+                nome,
+                numero_de_votacao,
+                partido
+            )
+            VALUES (%s, %s, %s)
+            """,
+            (name, number, party)
+        )
+
+        connection.commit()
+
+        print(
+            "Candidato cadastrado!"
+        )
+
+        register_management_log(
+            "Cadastro de candidato",
+            name
+        )
+
+    except Exception as error:
+
+        connection.rollback()
+
+        register_error_log(error)
+
+        print(
+            "Erro ao cadastrar candidato!"
+        )
+
+    finally:
+
+        cursor.close()
+        connection.close()
 
 
 def delete_candidate(number):
+    """
+    Remove candidato pelo número.
+
+    Args:
+        number (str):
+            Número do candidato.
+
+    Returns:
+        None
+    """
+
     connection, cursor = get_cursor()
 
-    cursor.execute(
-        "DELETE FROM candidatos WHERE numero_de_votacao = %s",
-        (number,)
-    )
-    connection.commit()
+    try:
 
-    if cursor.rowcount > 0:
-        print("Candidato removido!")
-    else:
-        print("Candidato não encontrado!")
+        cursor.execute(
+            """
+            DELETE FROM candidatos
+            WHERE numero_de_votacao = %s
+            """,
+            (number,)
+        )
 
-    cursor.close()
-    connection.close()
+        connection.commit()
+
+        if cursor.rowcount > 0:
+
+            print(
+                "Candidato removido!"
+            )
+
+            register_management_log(
+                "Remoção de candidato",
+                number
+            )
+
+        else:
+
+            print(
+                "Candidato não encontrado!"
+            )
+
+    except Exception as error:
+
+        connection.rollback()
+
+        register_error_log(error)
+
+        print(
+            "Erro ao remover candidato!"
+        )
+
+    finally:
+
+        cursor.close()
+        connection.close()
+
 
 def update_candidate():
     """
-    Edita candidato pelo número.
+    Atualiza dados de um candidato.
+
+    Returns:
+        None
     """
+
     connection, cursor = get_cursor()
 
-    found = False
-    number = None
+    try:
 
-    while not found:
-        number = input("Número do candidato: ")
+        found = False
+
+        while not found:
+
+            number = input(
+                "Número do candidato: "
+            )
+
+            cursor.execute(
+                """
+                SELECT id
+                FROM candidatos
+                WHERE numero_de_votacao = %s
+                """,
+                (number,)
+            )
+
+            result = cursor.fetchone()
+
+            if result:
+
+                found = True
+
+            else:
+
+                print(
+                    "Candidato não encontrado!"
+                )
+
+        name = input("Novo nome: ")
+        party = input("Novo partido: ")
 
         cursor.execute(
-            "SELECT id FROM candidatos WHERE numero_de_votacao = %s",
-            (number,)
+            """
+            UPDATE candidatos
+            SET nome = %s,
+                partido = %s
+            WHERE numero_de_votacao = %s
+            """,
+            (name, party, number)
         )
-        result = cursor.fetchone()
 
-        if result:
-            found = True
-        else:
-            print("Candidato não encontrado! Tente novamente.\n")
+        connection.commit()
 
-    # Só chega aqui se EXISTE candidato
-    name = input("Novo nome: ")
-    party = input("Novo partido: ")
+        print(
+            "Candidato atualizado!"
+        )
 
-    cursor.execute(
-        "UPDATE candidatos SET nome = %s, partido = %s WHERE numero_de_votacao = %s",
-        (name, party, number)
-    )
-    connection.commit()
+        register_management_log(
+            "Atualização de candidato",
+            number
+        )
 
-    print("Candidato atualizado com sucesso!")
+    except Exception as error:
 
-    cursor.close()
-    connection.close()
+        connection.rollback()
+
+        register_error_log(error)
+
+        print(
+            "Erro ao atualizar candidato!"
+        )
+
+    finally:
+
+        cursor.close()
+        connection.close()

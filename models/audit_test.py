@@ -4,6 +4,9 @@ Arquivo de testes do módulo de auditoria.
 Responsável por validar:
 - Registro de logs
 - Registro de protocolos
+- Registro de erros
+- Registro de gerenciamento
+- Registro de votos nulos
 - Exibição de logs
 - Exibição de protocolos
 
@@ -20,9 +23,11 @@ from models.audit import (
     register_access_denied_log,
     register_double_vote_log,
     register_vote_success_log,
-    register_closing_log
+    register_closing_log,
+    register_null_vote_log,
+    register_management_log,
+    register_error_log
 )
-
 
 # ============================================================
 # INÍCIO DOS TESTES
@@ -30,13 +35,11 @@ from models.audit import (
 
 print("\nARQUIVO DE TESTE EXECUTADO\n")
 
-
 # ============================================================
 # TESTE COMPLETO DE AUDITORIA
 # ============================================================
 
 print("===== TESTANDO LOGS E AUDITORIA =====\n")
-
 
 # ============================================================
 # TESTE 1 - ABERTURA
@@ -48,7 +51,6 @@ print("TESTE 1 - ABERTURA DA VOTAÇÃO")
 register_opening_log()
 
 print("RESULTADO: TESTE APROVADO\n")
-
 
 # ============================================================
 # TESTE 2 - ACESSO NEGADO
@@ -62,7 +64,6 @@ register_access_denied_log()
 
 print("RESULTADO: TESTE APROVADO\n")
 
-
 # ============================================================
 # TESTE 3 - VOTO DUPLO
 # RF002.02.01.05
@@ -74,7 +75,6 @@ register_double_vote_log()
 
 print("RESULTADO: TESTE APROVADO\n")
 
-
 # ============================================================
 # TESTE 4 - VOTO REALIZADO
 # RF002.02.01.06
@@ -82,32 +82,85 @@ print("RESULTADO: TESTE APROVADO\n")
 
 print("TESTE 4 - VOTO REALIZADO")
 
-register_vote_success_log()
+register_vote_success_log(
+    "VRT269950134"
+)
 
 print("RESULTADO: TESTE APROVADO\n")
 
+# ============================================================
+# TESTE 5 - VOTO NULO
+# RF002.02.01.06
+# ============================================================
+
+print("TESTE 5 - VOTO NULO")
+
+register_null_vote_log()
+
+print("RESULTADO: TESTE APROVADO\n")
 
 # ============================================================
-# TESTE 5 - ENCERRAMENTO
+# TESTE 6 - GERENCIAMENTO
+# RF001
+# ============================================================
+
+print("TESTE 6 - LOGS DE GERENCIAMENTO")
+
+register_management_log(
+    "CADASTRO",
+    "Eleitor João Silva"
+)
+
+register_management_log(
+    "REMOÇÃO",
+    "Candidato Número 22"
+)
+
+register_management_log(
+    "EDIÇÃO",
+    "Eleitor Maria Souza"
+)
+
+print("RESULTADO: TESTE APROVADO\n")
+
+# ============================================================
+# TESTE 7 - REGISTRO DE ERRO
+# RNF
+# ============================================================
+
+print("TESTE 7 - REGISTRO DE ERRO")
+
+try:
+
+    result = 10 / 0
+
+except Exception as error:
+
+    register_error_log(error)
+
+print("RESULTADO: TESTE APROVADO\n")
+
+# ============================================================
+# TESTE 8 - ENCERRAMENTO
 # RF002.02.01.07
 # ============================================================
 
-print("TESTE 5 - ENCERRAMENTO DA VOTAÇÃO")
+print("TESTE 8 - ENCERRAMENTO DA VOTAÇÃO")
 
 register_closing_log()
 
 print("RESULTADO: TESTE APROVADO\n")
 
-
 # ============================================================
-# TESTE 6 - REGISTRO DE PROTOCOLOS
+# TESTE 9 - REGISTRO DE PROTOCOLOS
 # RF002.02.02
 # ============================================================
 
-print("TESTE 6 - REGISTRO DE PROTOCOLOS")
+print("TESTE 9 - REGISTRO DE PROTOCOLOS")
 
 """
-Protocolos seguem o padrão definido na documentação:
+Protocolos seguem o padrão definido
+na documentação:
 
 Prefixo "V"
 + 2 letras aleatórias
@@ -122,33 +175,33 @@ register_protocol("VXP260145678")
 
 print("RESULTADO: TESTE APROVADO\n")
 
-
 # ============================================================
-# TESTE 7 - EXIBIÇÃO DOS LOGS
+# TESTE 10 - EXIBIÇÃO DOS LOGS
 # RF002.02.01.08
 # ============================================================
 
-print("TESTE 7 - EXIBINDO LOGS")
+print("TESTE 10 - EXIBINDO LOGS")
 
 show_logs()
 
 print("\nRESULTADO: TESTE APROVADO\n")
 
-
 # ============================================================
-# TESTE 8 - EXIBIÇÃO DOS PROTOCOLOS
+# TESTE 11 - EXIBIÇÃO DOS PROTOCOLOS
 # RF002.02.02
 # ============================================================
 
-print("TESTE 8 - EXIBINDO PROTOCOLOS")
+print("TESTE 11 - EXIBINDO PROTOCOLOS")
 
 show_protocols()
 
 print("\nRESULTADO: TESTE APROVADO\n")
 
-
 # ============================================================
 # FINALIZAÇÃO
 # ============================================================
 
-print("===== TODOS OS TESTES FINALIZADOS =====\n")
+print(
+    "===== TODOS OS TESTES "
+    "FINALIZADOS =====\n"
+)

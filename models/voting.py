@@ -1,320 +1,698 @@
 import random
 import string
 from datetime import datetime
-
-from models.candidate import get_candidate_by_number
 from database.connection import get_cursor
-from models.crypto.decrypt import decrypt_hill_cipher
-from models.crypto.encrypt import encrypt_hill_cipher
+from models.candidate import get_candidate_by_number
+from models.crypto.encrypt import (
+    encrypt_hill_cipher
+)
+from models.crypto.decrypt import (
+    decrypt_hill_cipher
+)
 from models.audit import (
     register_access_denied_log,
     register_double_vote_log,
     register_vote_success_log,
-    register_protocol
-    #register_closing_log
+    register_protocol,
+    register_closing_log,
+    register_null_vote_log,
+    register_error_log
 )
 
-def validate_poll_worker(cpf_partial, voter_id, access_key):
+# ============================================================
+# VALIDAÇÃO DE MESÁRIO
+# ============================================================
+
+def validate_poll_worker(
+    cpf_partial,
+    voter_id,
+    access_key
+):
     """
     Valida se o usuário é um mesário autorizado.
 
+    Regras:
+    - título deve existir
+    - chave deve ser válida
+    - CPF deve corresponder
+    - status_mesario deve ser TRUE
+
     Args:
-        cpf_partial (str): Primeiros 4 dígitos do CPF.
-        voter_id (str): Título de eleitor.
-        access_key (str): Chave de acesso do eleitor.
+        cpf_partial (str):
+            4 primeiros dígitos do CPF.
+
+        voter_id (str):
+            Título de eleitor.
+
+        access_key (str):
+            Chave de acesso.
 
     Returns:
-        bool: True se for um mesário válido, False caso contrário.
+        bool:
+            True se autorizado.
+            False caso contrário.
     """
+
     connection, cursor = get_cursor()
 
-    encrypted_key = encrypt_hill_cipher(access_key)
+    try:
 
-    cursor.execute("""
-        SELECT status_mesario, cpf
-        FROM eleitores
-        WHERE titulo_eleitor = %s
-          AND chave_acesso = %s
-    """, (voter_id, encrypted_key))
+        encrypted_key = encrypt_hill_cipher(
+            access_key
+        )
 
-    result = cursor.fetchone()
+        encrypted_voter_id = encrypt_hill_cipher(
+            voter_id
+        )
 
-    cursor.close()
-    connection.close()
+        cursor.execute("""
+            SELECT
+                status_mesario,
+                cpf
+            FROM eleitores
+            WHERE titulo_eleitor = %s
+              AND chave_acesso = %s
+        """, (encrypted_voter_id, encrypted_key))
 
-    # Título ou chave inválidos
-    if result is None:
+        result = cursor.fetchone()
+
+        # Não encontrado
+        if result is None:
+            return False
+
+        decrypted_cpf = decrypt_hill_cipher(
+            result["cpf"]
+        )
+
+        # CPF inválido
+        if not decrypted_cpf.startswith(
+            cpf_partial
+        ):
+            return False
+
+        # Não é mesário
+        if not result["status_mesario"]:
+            return False
+
+        return True
+
+    except Exception as error:
+
+        register_error_log(error)
+
         return False
 
-    # Verifica os 4 primeiros dígitos do CPF
-    decrypted_cpf = decrypt_hill_cipher(result["cpf"])
-    if not decrypted_cpf.startswith(cpf_partial):
-        return False
+    finally:
 
-    # Verifica se é mesário
-    return bool(result["status_mesario"])
+        cursor.close()
+        connection.close()
 
+# ============================================================
+# GERAÇÃO DE CHAVE
+# ============================================================
 
 def generate_access_key(full_name):
-    name_parts = full_name.strip().upper().split()
+    """
+    Gera uma chave de acesso automática.
+
+    Formato:
+    - 3 letras
+    - 4 números aleatórios
+
+    Exemplo:
+        ARS4821
+
+    Args:
+        full_name (str):
+            Nome completo do eleitor.
+
+    Returns:
+        str:
+            Chave de acesso gerada.
+    """
+
+    name_parts = (
+        full_name
+        .strip()
+        .upper()
+        .split()
+    )
 
     first_name = name_parts[0]
-    second_name = name_parts[1]
 
-    letters = first_name[:2] + second_name[0]
-    numbers = str(random.randint(1000, 9999))
+    # Segurança para nomes simples
+    if len(name_parts) > 1:
+        second_name = name_parts[1]
+    else:
+        second_name = "X"
+
+    letters = (
+        first_name[:2]
+        + second_name[0]
+    )
+
+    numbers = str(
+        random.randint(1000, 9999)
+    )
+
     access_key = letters + numbers
 
     return access_key
-    
+
+# ============================================================
+# ZERÉSIMA
+# ============================================================
+
 def zeresima():
     """
     Realiza a zerésima da votação.
 
-    Remove todos os votos registrados e redefine o status
-    de votação de todos os eleitores para FALSE.
+    Funcionamento:
+    - remove votos anteriores
+    - redefine status_votacao
 
-    Utilizado antes da abertura oficial da votação.
+    Returns:
+        bool:
+            True se executado.
+            False caso contrário.
     """
+
     connection, cursor = get_cursor()
 
     try:
-        # Apagar todos os votos
-        cursor.execute("DELETE FROM votacao")
 
-        # Resetar status dos eleitores
+        cursor.execute(
+            "DELETE FROM votacao"
+        )
+
         cursor.execute("""
             UPDATE eleitores
             SET status_votacao = FALSE
         """)
 
         connection.commit()
-        print("Votação zerada com sucesso!")
 
-    except Exception as e:
-        print("Erro ao zerar votação:", e)
+        print(
+            "Votação zerada com sucesso!"
+        )
+
+        return True
+
+    except Exception as error:
+
+        connection.rollback()
+
+        register_error_log(error)
+
+        print(
+            "Erro ao realizar zerésima!"
+        )
+
+        return False
 
     finally:
+
         cursor.close()
         connection.close()
 
+# ============================================================
+# PROTOCOLO
+# ============================================================
 
-
-def generate_voting_protocol(candidate_number):
+def generate_voting_protocol(
+    candidate_number
+):
     """
-    Gera o protocolo de votação do eleitor.
+    Gera protocolo oficial da votação.
+
+    Padrão:
+    V + 2 letras + 26 +
+    número candidato +
+    5 dígitos aleatórios
+
+    Exemplo:
+        VAB261512345
 
     Args:
-        candidate_number (int or None): Número do candidato votado.
+        candidate_number (str | None)
 
     Returns:
-        str: Protocolo original no formato VXX26NNYYYYY.
+        str
     """
-    letters = ''.join(random.choices(string.ascii_uppercase, k=2))
+
+    letters = ''.join(
+        random.choices(
+            string.ascii_uppercase,
+            k=2
+        )
+    )
+
     year = "26"
-    number = str(candidate_number).zfill(2) if candidate_number else "00"
-    digits = ''.join(random.choices(string.digits, k=5))
-    return f"V{letters}{year}{number}{digits}"
 
+    if candidate_number is None:
+        number = "00"
 
+    else:
+        number = str(
+            candidate_number
+        ).zfill(2)
 
-def identify_voter(voter_id, cpf_partial, access_key):
+    digits = ''.join(
+        random.choices(
+            string.digits,
+            k=5
+        )
+    )
+
+    return (
+        f"V{letters}"
+        f"{year}"
+        f"{number}"
+        f"{digits}"
+    )
+
+# ============================================================
+# IDENTIFICAÇÃO DO ELEITOR
+# ============================================================
+
+def identify_voter(
+    voter_id,
+    cpf_partial,
+    access_key
+):
     """
-    Busca o eleitor no banco validando as credenciais.
+    Identifica eleitor pelas credenciais.
 
     Args:
-        voter_id (str): Título de eleitor.
-        cpf_partial (str): 4 primeiros dígitos do CPF.
-        access_key (str): Chave de acesso digitada pelo eleitor.
+        voter_id (str)
+        cpf_partial (str)
+        access_key (str)
 
     Returns:
-        dict or None: Dados do eleitor se encontrado, None caso contrário.
+        dict | None
     """
-    connection, cursor = get_cursor()
 
-    encrypted_key = encrypt_hill_cipher(access_key)
-
-    cursor.execute("""
-        SELECT id, nome, cpf, status_votacao
-        FROM eleitores
-        WHERE titulo_eleitor = %s
-        AND chave_acesso = %s
-    """, (voter_id, encrypted_key))
-
-    result = cursor.fetchone()
-    cursor.close()
-    connection.close()
-
-    if result is None:
-        return None
-
-    # Descriptografa o CPF e compara os 4 primeiros dígitos
-    decrypted_cpf = decrypt_hill_cipher(result["cpf"])
-
-    if not decrypted_cpf.startswith(cpf_partial):
-        return None
-
-    return result
-
-
-
-def register_vote(voter_id, candidate_id, protocol):
-    """
-    Registra o voto na tabela votacao e atualiza o status do eleitor.
-
-    Args:
-        voter_id (str): Título do eleitor para atualizar status.
-        candidate_id (int or None): ID do candidato. None = voto nulo.
-        protocol (str): Protocolo original gerado para o eleitor.
-
-    Returns:
-        bool: True se registrado com sucesso, False se falhar.
-    """
     connection, cursor = get_cursor()
 
     try:
-        encrypted_protocol = encrypt_hill_cipher(protocol)
-        date_vote = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        encrypted_voter_id = encrypt_hill_cipher(
+            voter_id
+        )
+
+        encrypted_key = encrypt_hill_cipher(
+            access_key
+        )
 
         cursor.execute("""
-            INSERT INTO votacao (protocolo_criptografado, id_candidato, data_voto)
+            SELECT
+                id,
+                nome,
+                cpf,
+                status_votacao
+            FROM eleitores
+            WHERE titulo_eleitor = %s
+              AND chave_acesso = %s
+        """, (
+            encrypted_voter_id,
+            encrypted_key
+        ))
+
+        result = cursor.fetchone()
+
+        if result is None:
+            return None
+
+        decrypted_cpf = decrypt_hill_cipher(
+            result["cpf"]
+        )
+
+        if not decrypted_cpf.startswith(
+            cpf_partial
+        ):
+            return None
+
+        return result
+
+    except Exception as error:
+
+        register_error_log(error)
+
+        return None
+
+    finally:
+
+        cursor.close()
+        connection.close()
+
+# ============================================================
+# REGISTRO DO VOTO
+# ============================================================
+
+def register_vote(
+    voter_id,
+    candidate_id,
+    protocol
+):
+    """
+    Registra o voto no banco.
+
+    Funcionamento:
+    - salva voto
+    - salva protocolo criptografado
+    - atualiza status_votacao
+
+    Args:
+        voter_id (str)
+        candidate_id (int | None)
+        protocol (str)
+
+    Returns:
+        bool
+    """
+
+    connection, cursor = get_cursor()
+
+    try:
+
+        encrypted_protocol = (
+            encrypt_hill_cipher(protocol)
+        )
+
+        encrypted_voter_id = (
+            encrypt_hill_cipher(voter_id)
+        )
+
+        vote_date = datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+
+        cursor.execute("""
+            INSERT INTO votacao (
+                protocolo_criptografado,
+                id_candidato,
+                data_voto
+            )
             VALUES (%s, %s, %s)
-        """, (encrypted_protocol, candidate_id, date_vote))
+        """, (
+            encrypted_protocol,
+            candidate_id,
+            vote_date
+        ))
 
         cursor.execute("""
             UPDATE eleitores
             SET status_votacao = TRUE
             WHERE titulo_eleitor = %s
-        """, (voter_id,))
+        """, (encrypted_voter_id,))
 
         connection.commit()
+
         return True
 
-    except Exception as e:
+    except Exception as error:
+
         connection.rollback()
-        print("Erro ao registrar voto:", e)
+
+        register_error_log(error)
+
+        print(
+            "Erro ao registrar voto!"
+        )
+
         return False
 
     finally:
+
         cursor.close()
         connection.close()
 
-
+# ============================================================
+# FLUXO DE VOTAÇÃO
+# ============================================================
 
 def cast_vote():
     """
-    Executa o fluxo completo de votação de um eleitor.
+    Executa o fluxo completo da votação.
 
     Fluxo:
-    1. Identifica o eleitor pelas credenciais
-    2. Verifica se já votou
-    3. Captura o número do candidato com confirmação
-    4. Gera o protocolo
-    5. Registra o voto no banco
-    6. Exibe o protocolo e grava nos logs
-
-    Args:
-        None
-
-    Returns:
-        None
+    1. Identifica eleitor
+    2. Verifica voto duplo
+    3. Captura candidato
+    4. Confirma voto
+    5. Gera protocolo
+    6. Registra voto
+    7. Registra auditoria
     """
-    # IDENTIFICAÇÃO DO ELEITOR
-    voter_id = input("Título de eleitor: ")
-    cpf_partial = input("4 primeiros dígitos do CPF: ")
-    access_key = input("Chave de acesso: ")
 
-    voter = identify_voter(voter_id, cpf_partial, access_key)
+    # ========================================================
+    # IDENTIFICAÇÃO
+    # ========================================================
 
-    # Eleitor não encontrado
+    voter_id = input(
+        "Título de eleitor: "
+    )
+
+    cpf_partial = input(
+        "4 primeiros dígitos do CPF: "
+    )
+
+    access_key = input(
+        "Chave de acesso: "
+    )
+
+    voter = identify_voter(
+        voter_id,
+        cpf_partial,
+        access_key
+    )
+
+    # Acesso negado
     if voter is None:
-        print("Dados inválidos! Acesso negado.")
+
+        print(
+            "Dados inválidos! "
+            "Acesso negado."
+        )
+
         register_access_denied_log()
+
         return
 
-    # Eleitor já votou
+    # Voto duplo
     if voter["status_votacao"]:
-        print("Este eleitor já realizou o voto!")
+
+        print(
+            "Este eleitor já votou!"
+        )
+
         register_double_vote_log()
+
         return
 
+    # ========================================================
     # ESCOLHA DO CANDIDATO
+    # ========================================================
+
     candidate_id = None
     candidate_number = None
+
     confirmed = False
 
     while not confirmed:
-        number = input("Digite o número do candidato: ")
-        candidate = get_candidate_by_number(number)
 
+        number = input(
+            "Digite o número "
+            "do candidato: "
+        )
+
+        candidate = (
+            get_candidate_by_number(number)
+        )
+
+        # Candidato válido
         if candidate:
-            print(f"\nCandidato: {candidate['nome']}")
-            print(f"Número:    {candidate['numero_de_votacao']}")
-            print(f"Partido:   {candidate['partido']}")
+
+            print(
+                f"\nCandidato: "
+                f"{candidate['nome']}"
+            )
+
+            print(
+                f"Número: "
+                f"{candidate['numero_de_votacao']}"
+            )
+
+            print(
+                f"Partido: "
+                f"{candidate['partido']}"
+            )
+
             candidate_id = candidate["id"]
-            candidate_number = candidate["numero_de_votacao"]
+
+            candidate_number = (
+                candidate[
+                    "numero_de_votacao"
+                ]
+            )
+
+        # Voto nulo
         else:
-            print("Candidato não encontrado. O voto será registrado como NULO.")
+
+            print(
+                "Candidato não encontrado."
+            )
+
+            print(
+                "O voto será "
+                "registrado como NULO."
+            )
+
+            register_null_vote_log()
+
             candidate_id = None
             candidate_number = None
 
-        confirm = input("\nConfirma o voto? (Sim/Não): ").strip()
+        confirm = input(
+            "\nConfirma o voto? "
+            "(Sim/Não): "
+        ).strip().lower()
 
-        if confirm == "Sim":
-            break
+        if confirm == "sim":
+
+            confirmed = True
+
         else:
-            print("Voto cancelado. Digite novamente.\n")
 
-    # GERAÇÃO DO PROTOCOLO
-    protocol = generate_voting_protocol(candidate_number)
+            print(
+                "\nVoto cancelado."
+            )
 
-    # REGISTRO NO BANCO 
-    success = register_vote(voter_id, candidate_id, protocol)
+    # ========================================================
+    # GERAÇÃO DE PROTOCOLO
+    # ========================================================
+
+    protocol = generate_voting_protocol(
+        candidate_number
+    )
+
+    # ========================================================
+    # REGISTRO DO VOTO
+    # ========================================================
+
+    success = register_vote(
+        voter_id,
+        candidate_id,
+        protocol
+    )
 
     if success:
-        # Exibe protocolo original para o eleitor
-        print(f"\nVoto confirmado!")
-        print(f"Guarde seu protocolo: {protocol}")
 
-        # Grava logs e protocolo no arquivo
-        register_vote_success_log()
-        register_protocol(protocol)
+        print(
+            "\nVoto confirmado!"
+        )
+
+        print(
+            f"Guarde seu protocolo: "
+            f"{protocol}"
+        )
+
+        # Auditoria
+        register_vote_success_log(
+            protocol
+        )
+
+        register_protocol(
+            protocol
+        )
+
     else:
-        print("Erro ao registrar o voto. Tente novamente.")
 
+        print(
+            "Erro ao registrar voto."
+        )
 
+# ============================================================
+# ENCERRAMENTO DA VOTAÇÃO
+# ============================================================
 
-def finalize_voting(cpf_partial, voter_id, access_key):
+def finalize_voting(
+    cpf_partial,
+    voter_id,
+    access_key
+):
     """
-    Finaliza a votação, impedindo novos votos.
-    Valida o mesário e executa o encerramento da votação.
+    Finaliza oficialmente a votação.
+
+    Regras:
+    - apenas mesário autorizado
+    - confirmação obrigatória
+    - revalidação da chave
 
     Args:
-        cpf_partial (str): 4 primeiros dígitos do CPF do mesário.
-        voter_id (str): Título de eleitor do mesário.
-        access_key (str): Chave de acesso do mesário.
+        cpf_partial (str)
+        voter_id (str)
+        access_key (str)
 
     Returns:
-        bool: True se o encerramento foi autorizado, False caso contrário.
+        bool
     """
-    if not validate_poll_worker(cpf_partial, voter_id, access_key):
-        print("Acesso negado! Apenas mesários podem encerrar a votação.")
+
+    # Validação inicial
+    if not validate_poll_worker(
+        cpf_partial,
+        voter_id,
+        access_key
+    ):
+
+        print(
+            "Acesso negado!"
+        )
+
         register_access_denied_log()
+
         return False
 
-    confirm = input("Deseja realmente encerrar a votação? (Sim/Não): ").strip()
+    # Confirmação
+    confirm = input(
+        "Deseja realmente "
+        "encerrar a votação? "
+        "(Sim/Não): "
+    ).strip().lower()
 
-    if confirm != "Sim":
-        print("Encerramento cancelado.")
+    if confirm != "sim":
+
+        print(
+            "Encerramento cancelado."
+        )
+
         return False
 
-    access_key_confirm = input("Digite sua chave de acesso novamente: ").strip()
+    # Revalidação da chave
+    access_key_confirm = input(
+        "Digite sua chave "
+        "novamente: "
+    ).strip()
 
-    if not validate_poll_worker(cpf_partial, voter_id, access_key_confirm):
-        print("Chave inválida! Encerramento cancelado.")
+    if not validate_poll_worker(
+        cpf_partial,
+        voter_id,
+        access_key_confirm
+    ):
+
+        print(
+            "Chave inválida!"
+        )
+
         register_access_denied_log()
+
         return False
 
-    print("Votação encerrada com sucesso!")
-    #register_closing_log()
+    print(
+        "Votação encerrada "
+        "com sucesso!"
+    )
+
+    register_closing_log()
+
     return True

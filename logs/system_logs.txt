@@ -1,3 +1,10 @@
-[2026-05-07 09:56:10] SUCESSO: Voto realizado com sucesso.
-[2026-05-07 15:36:29] SUCESSO: Voto realizado com sucesso.
-[2026-05-07 15:50:11] SUCESSO: Voto realizado com sucesso.
+
+[2026-05-08 20:08:13] GERENCIAMENTO: Remoção de eleitor -> 45973957845
+[2026-05-08 20:08:58] GERENCIAMENTO: Cadastro de eleitor -> Arthur Cortina
+[2026-05-08 20:09:12] ERRO: string indices must be integers, not 'str'
+[2026-05-08 20:09:19] ERRO: string indices must be integers, not 'str'
+[2026-05-08 20:09:28] ERRO: string indices must be integers, not 'str'
+[2026-05-08 20:12:51] GERENCIAMENTO: Cadastro de candidato -> Jotinha
+[2026-05-08 20:14:06] ABERTURA: Votação iniciada com sucesso.
+[2026-05-08 20:14:29] SUCESSO: Voto registrado. Protocolo: VIX2612382156
+[2026-05-08 20:14:51] ENCERRAMENTO: Votação finalizada com sucesso.
