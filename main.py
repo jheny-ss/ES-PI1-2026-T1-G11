@@ -1,14 +1,16 @@
 from controllers.menu_controller import run_system
 
+
 def main():
     """
     Função principal do sistema.
 
-    Responsável por iniciar a execução do programa.
+    Responsável por iniciar a execução
+    do programa.
     """
-    executing = True
-    while executing:
-      executing = run_system()
+
+    run_system()
+
 
 if __name__ == "__main__":
     main()
