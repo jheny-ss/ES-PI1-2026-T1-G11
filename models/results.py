@@ -45,3 +45,59 @@ def elector_choice():
 
         cursor.close()
         connection.close()
+
+def statistic_voters():
+
+    connection, cursor = get_cursor()
+
+    try:
+
+        cursor.execute(
+            """
+            SELECT id,
+            COUNT(*) as total
+            FROM eleitores
+            """ 
+            )
+        
+        
+        total_result = cursor.fetchone()
+        total = total_result['total']
+        
+        
+        cursor.execute(
+            """SELECT votacao.id_candidatos,
+            COUNT (id) as total_comparecidos
+            FROM eleitores
+            INNER JOIN votacao
+            ON votacao.id = eleitores.id
+            """
+            )
+        
+        comparecidos_result = cursor.fetchone()
+        total_comparecidos = comparecidos_result['total_comparecidos']
+        results = cursor.fetchall()
+
+        print_line()
+        print("ESTATÍSTICA".center(50))
+        print_line()
+
+        for result in results:
+            print(
+                f"Eleitores comparecidos na votação: {result['total_comparecidos']} | "
+                f"Total de eleitores: {result['total']} | "
+                f"Porcentagem de participação: {((total_comparecidos*100)/total): .2f}%" 
+            )
+
+    except Exception as error:
+
+        print(error)  # MOSTRA O ERRO REAL
+
+        register_error_log(error)
+
+        print("Erro no cálculo de eleitores")
+
+    finally:
+
+        cursor.close()
+        connection.close()

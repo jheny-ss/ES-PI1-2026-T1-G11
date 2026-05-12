@@ -581,7 +581,7 @@ def handle_results():
                 print("Boletim de urna...")
 
             case 2:
-                print("Estatísticas...")
+                statistic_voters()
 
             case 3:
                 elector_choice()
