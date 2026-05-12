@@ -21,7 +21,7 @@ from models.audit import (
     show_protocols,
     register_opening_log
 )
-
+from models.results import elector_choice
 # =========================
 # SISTEMA PRINCIPAL
 # =========================
@@ -584,7 +584,7 @@ def handle_results():
                 print("Estatísticas...")
 
             case 3:
-                print("Votos por partido...")
+                elector_choice()
 
             case 4:
                 print(

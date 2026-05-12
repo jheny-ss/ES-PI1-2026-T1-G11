@@ -11,8 +11,8 @@ def get_connection():
     return mysql.connector.connect(
         host="localhost",
         user="root",          # ajuste conforme seu ambiente
-        password="@Rthursn25",          # ajuste conforme seu ambiente
-        database="sistema_de_votacao_pii"
+        password="",          # ajuste conforme seu ambiente
+        database="sistema_de_votacao"
     )
 
 
