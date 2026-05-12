@@ -82,8 +82,7 @@ def statistic_voters():
         print("ESTATÍSTICA".center(50))
         print_line()
 
-        for result in results:
-            print(
+        print(
                 f"Eleitores comparecidos na votação: {result['total_comparecidos']} | "
                 f"Total de eleitores: {result['total']} | "
                 f"Porcentagem de participação: {((total_comparecidos*100)/total): .2f}%" 
