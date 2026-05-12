@@ -1,6 +1,9 @@
 from views.menus import print_line
-def elector_choice():
+from database.connection import get_cursor
 
+from models.audit import register_error_log
+
+def elector_choice():
 
     connection, cursor = get_cursor()
 
@@ -9,12 +12,12 @@ def elector_choice():
         cursor.execute(
             """
             SELECT
-                candidatos.partido
-                COUNT (votacao.id) AS total
-                FROM votacao
-                INNER JOIN candidatos
-                ON candidatos.id = votacao.id_cadidato
-                GROUP BY cadidatos.partido
+                candidatos.partido,
+                COUNT(votacao.id) AS total
+            FROM votacao
+            INNER JOIN candidatos
+                ON candidatos.id = votacao.id_candidato
+            GROUP BY candidatos.partido
             """
         )
 
@@ -24,17 +27,19 @@ def elector_choice():
         print("VOTOS POR PARTIDO".center(50))
         print_line()
 
-        for politicals,total in results:
-            print (f"Partido: {politicals} | Total de votos: {total}"
+        for result in results:
+            print(
+                f"Partido: {result['partido']} | "
+                f"Total de votos: {result['total']}"
             )
 
     except Exception as error:
 
+        print(error)  # MOSTRA O ERRO REAL
+
         register_error_log(error)
 
-        print(
-            "Erro na apuração dos votos por partido"
-        )
+        print("Erro na apuração dos votos por partido")
 
     finally:
 

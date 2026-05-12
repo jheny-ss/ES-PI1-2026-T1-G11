@@ -8,3 +8,25 @@
 [2026-05-08 20:14:06] ABERTURA: Votação iniciada com sucesso.
 [2026-05-08 20:14:29] SUCESSO: Voto registrado. Protocolo: VIX2612382156
 [2026-05-08 20:14:51] ENCERRAMENTO: Votação finalizada com sucesso.
+[2026-05-12 16:43:36] ABERTURA: Votação iniciada com sucesso.
+[2026-05-12 16:44:23] SUCESSO: Voto registrado. Protocolo: VRH264594919
+[2026-05-12 16:53:59] ABERTURA: Votação iniciada com sucesso.
+[2026-05-12 16:54:10] ALERTA: Tentativa de acesso negado.
+[2026-05-12 16:54:58] SUCESSO: Voto registrado. Protocolo: VOC264575752
+[2026-05-12 16:55:23] ENCERRAMENTO: Votação finalizada com sucesso.
+[2026-05-12 16:55:31] ERRO: 1630 (42000): FUNCTION sistema_de_votacao.COUNT does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual
+[2026-05-12 16:58:59] ABERTURA: Votação iniciada com sucesso.
+[2026-05-12 16:59:34] SUCESSO: Voto registrado. Protocolo: VAN264569361
+[2026-05-12 17:01:47] ABERTURA: Votação iniciada com sucesso.
+[2026-05-12 17:02:06] SUCESSO: Voto registrado. Protocolo: VBU264548670
+[2026-05-12 17:02:46] ALERTA: Tentativa de acesso negado.
+[2026-05-12 17:03:13] ENCERRAMENTO: Votação finalizada com sucesso.
+[2026-05-12 17:11:04] ABERTURA: Votação iniciada com sucesso.
+[2026-05-12 17:11:20] SUCESSO: Voto registrado. Protocolo: VBK264526218
+[2026-05-12 17:11:38] ENCERRAMENTO: Votação finalizada com sucesso.
+[2026-05-12 17:15:09] GERENCIAMENTO: Cadastro de eleitor -> Julia Bezerra
+[2026-05-12 17:15:42] ABERTURA: Votação iniciada com sucesso.
+[2026-05-12 17:16:32] ALERTA: Tentativa de acesso negado.
+[2026-05-12 17:17:06] SUCESSO: Voto registrado. Protocolo: VMS264528198
+[2026-05-12 17:18:00] SUCESSO: Voto registrado. Protocolo: VTE264578997
+[2026-05-12 17:18:26] ENCERRAMENTO: Votação finalizada com sucesso.
