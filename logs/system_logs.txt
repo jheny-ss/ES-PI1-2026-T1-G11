@@ -30,3 +30,27 @@
 [2026-05-12 17:17:06] SUCESSO: Voto registrado. Protocolo: VMS264528198
 [2026-05-12 17:18:00] SUCESSO: Voto registrado. Protocolo: VTE264578997
 [2026-05-12 17:18:26] ENCERRAMENTO: Votação finalizada com sucesso.
+[2026-05-13 09:02:01] ABERTURA: Votação iniciada com sucesso.
+[2026-05-13 09:02:28] SUCESSO: Voto registrado. Protocolo: VKB266959861
+[2026-05-13 09:03:32] SUCESSO: Voto nulo registrado.
+[2026-05-13 09:03:35] SUCESSO: Voto registrado. Protocolo: VEP260094608
+[2026-05-13 09:04:21] SUCESSO: Voto registrado. Protocolo: VYJ262099462
+[2026-05-13 09:04:58] ENCERRAMENTO: Votação finalizada com sucesso.
+[2026-05-13 09:05:25] ERRO: 1140 (42000): In aggregated query without GROUP BY, expression #1 of SELECT list contains nonaggregated column 'sistema_de_votacao.eleitores.id'; this is incompatible with sql_mode=only_full_group_by
+[2026-05-13 09:26:42] ABERTURA: Votação iniciada com sucesso.
+[2026-05-13 09:27:48] SUCESSO: Voto registrado. Protocolo: VZZ266934071
+[2026-05-13 09:28:42] SUCESSO: Voto nulo registrado.
+[2026-05-13 09:28:46] SUCESSO: Voto registrado. Protocolo: VNG260048313
+[2026-05-13 09:29:30] SUCESSO: Voto registrado. Protocolo: VEY262087273
+[2026-05-13 09:30:22] ENCERRAMENTO: Votação finalizada com sucesso.
+[2026-05-13 09:30:30] ERRO: 1054 (42S22): Unknown column 'id_eleitor' in 'field list'
+[2026-05-13 09:47:00] ABERTURA: Votação iniciada com sucesso.
+[2026-05-13 09:47:42] SUCESSO: Voto registrado. Protocolo: VWZ266988155
+[2026-05-13 09:48:40] SUCESSO: Voto registrado. Protocolo: VQL262063542
+[2026-05-13 09:49:30] SUCESSO: Voto nulo registrado.
+[2026-05-13 09:49:33] SUCESSO: Voto registrado. Protocolo: VJV260092256
+[2026-05-13 09:50:07] ENCERRAMENTO: Votação finalizada com sucesso.
+[2026-05-13 09:51:59] ABERTURA: Votação iniciada com sucesso.
+[2026-05-13 09:52:22] SUCESSO: Voto registrado. Protocolo: VXZ266935039
+[2026-05-13 09:52:42] ALERTA: Tentativa de acesso negado.
+[2026-05-13 09:53:02] ENCERRAMENTO: Votação finalizada com sucesso.

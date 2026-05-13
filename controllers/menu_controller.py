@@ -579,7 +579,7 @@ def handle_results():
         match choice:
 
             case 1:
-                print("Boletim de urna...")
+                ballot_box()
 
             case 2:
                 statistic_voters()
@@ -588,10 +588,7 @@ def handle_results():
                 elector_choice()
 
             case 4:
-                print(
-                    "Validação de integridade..."
-                )
-
+                integrity_validation()
             case 5:
                 results_running = False
 
