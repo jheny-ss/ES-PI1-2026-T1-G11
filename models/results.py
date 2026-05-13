@@ -83,8 +83,8 @@ def statistic_voters():
         print_line()
 
         print(
-                f"Eleitores comparecidos na votação: {result['total_comparecidos']} | "
-                f"Total de eleitores: {result['total']} | "
+                f"Eleitores comparecidos na votação: {total_comparecidos} | "
+                f"Total de eleitores: {total} | "
                 f"Porcentagem de participação: {((total_comparecidos*100)/total): .2f}%" 
             )
 
@@ -182,4 +182,57 @@ def ballot_box():
         cursor.close()
         connection.close()
 
+def integrity_validation():
+    """
+    Valida a integridade da eleição comparando o total de votos
+    registrados na urna com o total de eleitores com status 'Já Votou'.
 
+    Returns:
+        None
+    """
+
+    connection, cursor = get_cursor()
+
+    try:
+
+        cursor.execute(
+            """
+            SELECT COUNT(*) AS total_votos
+            FROM votacao
+            """
+        )
+        total_votos = cursor.fetchone()['total_votos']
+
+        cursor.execute(
+            """
+            SELECT COUNT(*) AS total_ja_votou
+            FROM eleitores
+            WHERE status_votacao = TRUE
+            """
+        )
+        total_ja_votou = cursor.fetchone()['total_ja_votou']
+
+        print_line()
+        print("VALIDAÇÃO DE INTEGRIDADE".center(50))
+        print_line()
+        print(f"Votos registrados na urna:       {total_votos}")
+        print(f"Eleitores com status 'Já Votou': {total_ja_votou}")
+        print_line()
+
+        if total_votos == total_ja_votou:
+            print("ÍNTEGRA: Os números coincidem. Eleição válida.".center(50))
+        else:
+            diferenca = abs(total_votos - total_ja_votou)
+            print("INCONSISTÊNCIA DETECTADA!".center(50))
+            print(f"Diferença: {diferenca} registro(s) divergente(s).")
+
+        print_line()
+
+    except Exception as error:
+        print(error)
+        register_error_log(error)
+        print("Erro na validação de integridade.")
+
+    finally:
+        cursor.close()
+        connection.close()

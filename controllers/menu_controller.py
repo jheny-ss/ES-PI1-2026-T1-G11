@@ -22,6 +22,7 @@ from models.audit import (
     register_opening_log
 )
 from models.results import elector_choice
+from models.results import *
 # =========================
 # SISTEMA PRINCIPAL
 # =========================
