@@ -240,11 +240,11 @@ def generate_voting_protocol(
         str
     """
 
+    UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    DIGITS = '0123456789'
+
     letters = ''.join(
-        random.choices(
-            string.ascii_uppercase,
-            k=2
-        )
+        random.choices(UPPERCASE, k=2)
     )
 
     year = "26"
@@ -258,12 +258,9 @@ def generate_voting_protocol(
         ).zfill(2)
 
     digits = ''.join(
-        random.choices(
-            string.digits,
-            k=5
-        )
+        random.choices(DIGITS, k=5)
     )
-
+    
     return (
         f"V{letters}"
         f"{year}"
