@@ -63,12 +63,12 @@ def list_electors():
             )
 
             print(
-                f"{elector['id']} - "
-                f"{elector['nome']} - "
-                f"{decrypted_cpf} - "
-                f"{decrypted_voter_id} - "
-                f"{decrypted_key} - "
-                f"Mesário: {elector['status_mesario']}"
+                f"⮚  {elector['id']} - "
+                f" {elector['nome']} - "
+                f" {decrypted_cpf} - "
+                f" {decrypted_voter_id} - "
+                f" {decrypted_key} - "
+                f" Mesário: {elector['status_mesario']}"
             )
 
     except Exception as error:
@@ -148,6 +148,33 @@ def get_elector_by_cpf(cpf):
 
         cursor.close()
         connection.close()
+
+def print_elector(elector: dict):      
+    campos = [
+        ("ID",           str(elector["id"])),
+        ("Nome",         elector["nome"]),
+        ("CPF",          elector["cpf"]),
+        ("Título",       elector["titulo_eleitor"]),
+        ("Chave",        elector["chave_acesso"]),
+        ("Votou",        "Sim" if elector["status_votacao"] else "Não"),
+        ("Mesário",      "Sim" if elector["status_mesario"] else "Não"),
+        ("Data do voto", str(elector["data_hora_voto"])),
+    ]
+
+    maior_chave = max(len(c[0]) for c in campos)
+    maior_valor = max(len(c[1]) for c in campos)
+    largura     = maior_chave + maior_valor + 5
+
+    linhas = [
+        f"{'===== ELEITOR =====':^{largura}}",
+    ]
+
+    for chave, valor in campos:
+        conteudo = f"  {chave:<{maior_chave}}  {valor:<{maior_valor}}  "
+        linhas.append(f"{conteudo}")
+
+
+    print("\n".join(linhas))
 
 
 def create_elector(

@@ -23,6 +23,7 @@ from models.audit import (
 )
 from models.results import elector_choice
 from models.results import *
+from models.elector import print_elector
 # =========================
 # SISTEMA PRINCIPAL
 # =========================
@@ -122,13 +123,14 @@ def handle_electors():
 
                     elector = (
                         get_elector_by_cpf(cpf)
+                        
                     )
-
-                    print(
-                        elector
-                        if elector
-                        else "Não encontrado!"
-                    )
+                    if elector:
+                        print_elector(elector)
+                    else:
+                        print("Não encontrado!")
+                    
+                    
             case 3:
 
                 cpf = input_with_exit(
