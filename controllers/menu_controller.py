@@ -1,6 +1,7 @@
 from models.elector import *
 from models.candidate import *
 from models.voting import *
+from models.results import *
 from models.validators.voter_registration_validation import (
     registration_validation
 )
@@ -21,9 +22,7 @@ from models.audit import (
     show_protocols,
     register_opening_log
 )
-from models.results import elector_choice
-from models.results import *
-from models.elector import print_elector
+
 # =========================
 # SISTEMA PRINCIPAL
 # =========================
@@ -332,11 +331,12 @@ def handle_candidates():
                         )
                     )
 
-                    print(
-                        candidate
-                        if candidate
-                        else "Não encontrado!"
-                    )
+                    if candidate:
+                        print_candidate(candidate)
+                    
+                    else:
+                        print("Não encontrado!")
+                    
             case 3:
 
                 number = input(

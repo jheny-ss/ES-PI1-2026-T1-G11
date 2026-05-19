@@ -48,27 +48,65 @@ def list_electors():
 
             return
 
+        dados = []
+
         for elector in electors:
 
-            decrypted_cpf = decrypt_hill_cipher(
-                elector["cpf"]
-            )
+            dados.append({
+                "id":            str(elector["id"]),
+                "nome":          elector["nome"],
+                "cpf":           decrypt_hill_cipher(elector["cpf"]),
+                "titulo":        decrypt_hill_cipher(elector["titulo_eleitor"]),
+                "chave":         decrypt_hill_cipher(elector["chave_acesso"]),
+                "mesario":       "Sim" if elector["status_mesario"] else "Não",
+            })
 
-            decrypted_voter_id = decrypt_hill_cipher(
-                elector["titulo_eleitor"]
-            )
+        maior_id      = max(len(e["id"])      for e in dados)
+        maior_nome    = max(len(e["nome"])    for e in dados)
+        maior_cpf     = max(len(e["cpf"])     for e in dados)
+        maior_titulo  = max(len(e["titulo"])  for e in dados)
+        maior_chave   = max(len(e["chave"])   for e in dados)
+        maior_mesario = max(len(e["mesario"]) for e in dados)
 
-            decrypted_key = decrypt_hill_cipher(
-                elector["chave_acesso"]
-            )
+        maior_id      = max(maior_id,      len("ID"))
+        maior_nome    = max(maior_nome,    len("Nome"))
+        maior_cpf     = max(maior_cpf,     len("CPF"))
+        maior_titulo  = max(maior_titulo,  len("Título"))
+        maior_chave   = max(maior_chave,   len("Chave"))
+        maior_mesario = max(maior_mesario, len("Mesário"))
+
+        margem = " " * 2
+
+        cabecalho = (
+            f"{margem}{'ID':<{maior_id}}  "
+            f"{'Nome':<{maior_nome}}  "
+            f"{'CPF':<{maior_cpf}}  "
+            f"{'Título':<{maior_titulo}}  "
+            f"{'Chave':<{maior_chave}}  "
+            f"{'Mesário':<{maior_mesario}}"
+        )
+
+        separador = (
+            f"{margem}{'─'*maior_id}  "
+            f"{'─'*maior_nome}  "
+            f"{'─'*maior_cpf}  "
+            f"{'─'*maior_titulo}  "
+            f"{'─'*maior_chave}  "
+            f"{'─'*maior_mesario}"
+        )
+
+        print(cabecalho)
+        print(separador)
+
+        for e in dados:
 
             print(
-                f"⮚  {elector['id']} - "
-                f" {elector['nome']} - "
-                f" {decrypted_cpf} - "
-                f" {decrypted_voter_id} - "
-                f" {decrypted_key} - "
-                f" Mesário: {elector['status_mesario']}"
+                f"{margem}{e['id']:<{maior_id}}  "
+                f"{e['nome']:<{maior_nome}}  "
+                f"{e['cpf']:<{maior_cpf}}  "
+                f"{e['titulo']:<{maior_titulo}}  "
+                f"{e['chave']:<{maior_chave}}  "
+                f"{e['mesario']:<{maior_mesario}}"
             )
 
     except Exception as error:

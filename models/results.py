@@ -15,8 +15,8 @@ def elector_choice():
             SELECT
                 candidatos.partido,
                 COUNT(votacao.id) AS total
-            FROM votacao
-            INNER JOIN candidatos
+            FROM candidatos
+            LEFT JOIN votacao
                 ON candidatos.id = votacao.id_candidato
             GROUP BY candidatos.partido
             ORDER BY total DESC

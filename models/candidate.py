@@ -30,17 +30,32 @@ def list_candidates():
         print("\n===== LISTA DE CANDIDATOS =====\n")
 
         if not candidates:
-
             print("Nenhum candidato cadastrado!")
             return
 
-        for candidate in candidates:
+        maior_nome    = max(len(c["nome"])                    for c in candidates)
+        maior_numero  = max(len(str(c["numero_de_votacao"]))  for c in candidates)
+        maior_partido = max(len(c["partido"])                 for c in candidates)
 
-            print(
-                f"{candidate['nome']} - "
-                f"{candidate['numero_de_votacao']} - "
-                f"{candidate['partido']}"
+        maior_nome    = max(maior_nome,    len("Nome"))
+        maior_numero  = max(maior_numero,  len("Número"))
+        maior_partido = max(maior_partido, len("Partido"))
+
+        margem = " " * 2  
+
+        cabecalho = f"{margem}{'Nome':<{maior_nome}}  {'Número':>{maior_numero}}  {'Partido':<{maior_partido}}"
+        separador = f"{margem}{'─'*maior_nome}  {'─'*maior_numero}  {'─'*maior_partido}"
+
+        print(cabecalho)
+        print(separador)
+
+        for candidate in candidates:
+            linha = (
+                f"{margem}{candidate['nome']:<{maior_nome}}  "
+                f"{str(candidate['numero_de_votacao']):>{maior_numero}}  "
+                f"{candidate['partido']:<{maior_partido}}"
             )
+            print(linha)
 
     except Exception as error:
 
@@ -93,6 +108,29 @@ def get_candidate_by_number(number):
 
         cursor.close()
         connection.close()
+
+def print_candidate(candidate: dict):      
+    campos = [
+        ("ID",           str(candidate["id"])),
+        ("Nome",         candidate["nome"]),
+        ("Número",       str(candidate["numero_de_votacao"])),
+        ("Partido",      candidate["partido"]),
+    ]
+
+    maior_chave = max(len(c[0]) for c in campos)
+    maior_valor = max(len(c[1]) for c in campos)
+    largura     = maior_chave + maior_valor + 5
+
+    linhas = [
+        f"{'===== CANDIDATO =====':^{largura}}",
+    ]
+
+    for chave, valor in campos:
+        conteudo = f"  {chave:<{maior_chave}}  {valor:<{maior_valor}}  "
+        linhas.append(f"{conteudo}")
+
+
+    print("\n".join(linhas))
 
 
 def create_candidate(name, number, party):
