@@ -1,0 +1,4 @@
+[2026-05-20 08:43:19] GERENCIAMENTO: Atualização de eleitor -> 41205167846
+[2026-05-20 08:45:28] ABERTURA: Votação iniciada com sucesso.
+[2026-05-20 08:49:07] SUCESSO: Voto registrado. Protocolo: VGJ266920877
+[2026-05-20 08:49:50] ENCERRAMENTO: Votação finalizada com sucesso.

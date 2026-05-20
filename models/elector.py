@@ -196,7 +196,7 @@ def print_elector(elector: dict):
         ("Chave",        elector["chave_acesso"]),
         ("Votou",        "Sim" if elector["status_votacao"] else "Não"),
         ("Mesário",      "Sim" if elector["status_mesario"] else "Não"),
-        ("Data do voto", str(elector["data_hora_voto"])),
+        ("Data do voto", str(elector["data_voto"])),
     ]
 
     maior_chave = max(len(c[0]) for c in campos)

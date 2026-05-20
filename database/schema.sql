@@ -27,7 +27,7 @@ CREATE TABLE eleitores (
     chave_acesso    VARCHAR(100) NOT NULL UNIQUE,        -- criptografado com Cifra de Hill 
     status_votacao  BOOLEAN NOT NULL DEFAULT FALSE,      -- FALSE = não votou, TRUE = já votou
     status_mesario  BOOLEAN NOT NULL DEFAULT FALSE,      -- FALSE = eleitor comum, TRUE = mesário
-    data_hora_voto  DATE NULL DEFAULT (CURRENT_DATE)           -- preenchido no momento do voto 
+    data_voto  DATE NULL DEFAULT (CURRENT_DATE)           -- preenchido no momento do voto 
 );
 
 /**
