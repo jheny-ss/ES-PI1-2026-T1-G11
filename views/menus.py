@@ -1,8 +1,15 @@
+import os
+
 def print_line():
     print("-" * 50)
 
 
+def clear_terminal():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
 def show_menu(title, options):
+    clear_terminal() 
     print_line()
     print(title.center(50))
     print_line()
