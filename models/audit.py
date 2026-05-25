@@ -42,6 +42,14 @@ os.makedirs(LOG_DIRECTORY, exist_ok=True)
 # REGISTRO DE LOGS
 # ============================================================
 
+def clear_logs_and_protocols():
+    """
+    Apaga log e protocolos ao abrir nova votação.
+    """
+    open(LOG_FILE, "w", encoding="utf-8").close()
+    open(PROTOCOL_FILE, "w", encoding="utf-8").close()
+
+
 def register_log(message):
     """
     Registra uma ocorrência no arquivo de logs.
@@ -80,6 +88,8 @@ def register_opening_log():
     Returns:
         None
     """
+
+    clear_logs_and_protocols()
 
     register_log(
         "ABERTURA: Votação iniciada com sucesso."
