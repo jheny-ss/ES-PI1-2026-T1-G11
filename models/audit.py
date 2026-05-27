@@ -149,7 +149,6 @@ def register_vote_success_log(protocol):
 
     register_log(
         f"SUCESSO: Voto registrado. "
-        f"Protocolo: {protocol}"
     )
 
 

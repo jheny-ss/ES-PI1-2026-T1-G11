@@ -1,4 +1,7 @@
-[2026-05-20 08:43:19] GERENCIAMENTO: Atualização de eleitor -> 41205167846
-[2026-05-20 08:45:28] ABERTURA: Votação iniciada com sucesso.
-[2026-05-20 08:49:07] SUCESSO: Voto registrado. Protocolo: VGJ266920877
-[2026-05-20 08:49:50] ENCERRAMENTO: Votação finalizada com sucesso.
+[2026-05-27 17:38:34] ABERTURA: Votação iniciada com sucesso.
+[2026-05-27 17:38:59] SUCESSO: Voto registrado. 
+[2026-05-27 17:39:22] ENCERRAMENTO: Votação finalizada com sucesso.
+[2026-05-27 17:43:09] GERENCIAMENTO: Remoção de eleitor -> 48871780850
+[2026-05-27 17:47:54] GERENCIAMENTO: Cadastro de eleitor -> Jhenyfer Souza
+[2026-05-27 17:53:36] GERENCIAMENTO: Atualização de eleitor -> 48871780850
+[2026-05-27 17:54:39] GERENCIAMENTO: Atualização de eleitor -> 48871780850

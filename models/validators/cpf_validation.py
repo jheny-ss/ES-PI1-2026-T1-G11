@@ -79,3 +79,27 @@ def validate_cpf(cpf):
 
     return False
 
+def validate_partcpf_format(partcpf):
+    """
+    Verifica se foi digitado apenas os 4 primeiros digitos do cpf e se é válido.
+
+    Args:
+        partcpf (str): Parte do CPF informada pelo usuário.
+
+    Returns:
+        bool:
+            True  -> Formato válido
+            False -> Formato inválido
+    """
+    # Remove pontos e traços
+    cpf = partcpf.replace(".", "").replace("-", "").strip()
+
+    # Verifica se possui apenas números
+    if not cpf.isdigit():
+        return False
+
+    # Verifica tamanho
+    if len(cpf) != 4:
+        return False
+
+    return True

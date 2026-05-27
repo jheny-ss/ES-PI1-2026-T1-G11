@@ -6,7 +6,8 @@ from models.validators.voter_registration_validation import (
     registration_validation
 )
 from models.validators.cpf_validation import (
-    validate_cpf
+    validate_cpf,
+    validate_partcpf_format
 )
 from models.validators.name_validation import (
     validate_full_name
@@ -139,7 +140,17 @@ def handle_electors():
                 )
 
                 if cpf is not None:
-                    delete_elector(cpf)
+                    
+                    confirm = input(
+                            "Confirma remoção? "
+                            "(s/n): "
+                        ).lower()
+
+                    if confirm == "s":
+                        delete_elector(cpf)
+
+                    else:
+                        print("Remoção cancelada.")
             case 4:
 
                 elector = None
@@ -448,11 +459,26 @@ def handle_voting():
                 if voter_id == "0":
                     continue
 
-                cpf_partial = input(
-                    "4 primeiros dígitos "
-                    "do CPF "
-                    "(0 para voltar): "
-                )
+                cpf_valid = False
+
+                while not cpf_valid:
+
+                    cpf_partial = input(
+                        "4 primeiros dígitos "
+                        "do CPF "
+                        "(0 para voltar): "
+                    )
+
+                    if cpf_partial == "0":
+                        break
+
+                    if validate_partcpf_format(cpf_partial):
+                        cpf_valid = True
+                    else:
+                        print(
+                            "Formato inválido! "
+                            "Digite exatamente os 4 primeiros dígitos do CPF."
+                        )
 
                 if cpf_partial == "0":
                     continue
@@ -517,14 +543,8 @@ def handle_open_voting():
                 cast_vote()
             case 2:
 
-                cpf_partial = input(
-                    "4 primeiros dígitos "
-                    "do CPF "
-                    "(0 para voltar): "
-                )
-
-                if cpf_partial == "0":
-                    continue
+                
+                
 
                 voter_id = input(
                     "Título do mesário "
@@ -532,6 +552,31 @@ def handle_open_voting():
                 )
 
                 if voter_id == "0":
+                    continue
+
+
+                cpf_valid = False
+
+                while not cpf_valid:
+
+                    cpf_partial = input(
+                        "4 primeiros dígitos "
+                        "do CPF "
+                        "(0 para voltar): "
+                    )
+
+                    if cpf_partial == "0":
+                        break
+
+                    if validate_partcpf_format(cpf_partial):
+                        cpf_valid = True
+                    else:
+                        print(
+                            "Formato inválido! "
+                            "Digite exatamente os 4 primeiros dígitos do CPF."
+                        )
+
+                if cpf_partial == "0":
                     continue
 
                 access_key = input(

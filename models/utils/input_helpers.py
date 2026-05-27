@@ -41,7 +41,7 @@ def input_with_exit(
 
 def input_yes_no(message):
     """
-    Solicita resposta Sim/Não.
+    Solicita resposta S/N.
 
     Permite cancelar digitando 0.
 
@@ -57,12 +57,12 @@ def input_yes_no(message):
     """
 
     value = input(
-        f"{message} (Sim/Não | 0 para voltar): "
-    )
+        f"{message} (S/N | 0 para voltar): "
+    ).strip().upper()
 
     while value not in [
-        "Sim",
-        "Não",
+        "S",
+        "N",
         "0"
     ]:
 
@@ -70,10 +70,10 @@ def input_yes_no(message):
 
         value = input(
             f"{message} "
-            "(Sim/Não | 0 para voltar): "
+            "(S/N | 0 para voltar): "
         )
 
     if value == "0":
         return None
 
-    return value == "Sim"
+    return value == "S"

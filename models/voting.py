@@ -18,6 +18,7 @@ from models.audit import (
     register_null_vote_log,
     register_error_log
 )
+from models.validators.cpf_validation import *
 
 # ============================================================
 # VALIDAÇÃO DE MESÁRIO
@@ -450,9 +451,22 @@ def cast_vote():
         "Título de eleitor: "
     )
 
-    cpf_partial = input(
-        "4 primeiros dígitos do CPF: "
-    )
+    cpf_valid = False
+
+    while not cpf_valid:
+
+        cpf_partial = input(
+            "4 primeiros dígitos do CPF: "
+        )
+
+        if validate_partcpf_format(cpf_partial):
+            cpf_valid = True
+
+        else:
+            print(
+                "CPF inválido! "
+                "Digite exatamente 4 números."
+            )
 
     access_key = input(
         "Chave de acesso: "
@@ -552,10 +566,10 @@ def cast_vote():
 
         confirm = input(
             "\nConfirma o voto? "
-            "(Sim/Não): "
+            "(S/N): "
         ).strip().lower()
 
-        if confirm == "sim":
+        if confirm == "s":
 
             confirmed = True
 
@@ -654,10 +668,10 @@ def finalize_voting(
     confirm = input(
         "Deseja realmente "
         "encerrar a votação? "
-        "(Sim/Não): "
+        "(S/N): "
     ).strip().lower()
 
-    if confirm != "sim":
+    if confirm != "s":
 
         print(
             "Encerramento cancelado."
