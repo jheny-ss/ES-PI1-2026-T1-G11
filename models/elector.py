@@ -196,15 +196,14 @@ def print_elector(elector: dict):
         ("Chave",        elector["chave_acesso"]),
         ("Votou",        "Sim" if elector["status_votacao"] else "Não"),
         ("Mesário",      "Sim" if elector["status_mesario"] else "Não"),
-        ("Data do voto", str(elector.get("data_voto", "Nenhuma"))),
-    ]
+     ]
 
     maior_chave = max(len(c[0]) for c in campos)
     maior_valor = max(len(c[1]) for c in campos)
     largura     = maior_chave + maior_valor + 5
 
     linhas = [
-        f"{'===== ELEITOR =====':^{largura}}",
+        f"{'\n===== ELEITOR =====':^{largura}}",
     ]
 
     for chave, valor in campos:

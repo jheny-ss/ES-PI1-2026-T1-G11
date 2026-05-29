@@ -5,6 +5,27 @@ from models.audit import (
     register_error_log
 )
 
+def validate_candidate_number(number):
+    """
+    Valida número de candidato.
+
+    Regras:
+    - Deve conter apenas números
+    - Deve ter entre 2 e 5 dígitos
+    """
+
+    number = number.strip()
+
+    # Apenas números
+    if not number.isdigit():
+        return False
+
+    # Tamanho permitido
+    if len(number) < 2 or len(number) > 5:
+        return False
+
+    return True
+
 
 def list_candidates():
     """
@@ -122,7 +143,7 @@ def print_candidate(candidate: dict):
     largura     = maior_chave + maior_valor + 5
 
     linhas = [
-        f"{'===== CANDIDATO =====':^{largura}}",
+        f"{'\n===== CANDIDATO =====':^{largura}}",
     ]
 
     for chave, valor in campos:
@@ -150,6 +171,10 @@ def create_candidate(name, number, party):
     Returns:
         None
     """
+
+    if not validate_candidate_number(number):
+        print("Número inválido!")
+        return
 
     connection, cursor = get_cursor()
 
@@ -352,3 +377,25 @@ def update_candidate():
 
         cursor.close()
         connection.close()
+
+
+def validate_candidate_number(number):
+    """
+    Valida número de candidato.
+
+    Regras:
+    - Deve conter apenas números
+    - Deve ter entre 2 e 5 dígitos
+    """
+
+    number = number.strip()
+
+    # Apenas números
+    if not number.isdigit():
+        return False
+
+    # Tamanho permitido
+    if len(number) < 2 or len(number) > 5:
+        return False
+
+    return True

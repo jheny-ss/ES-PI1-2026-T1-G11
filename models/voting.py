@@ -85,6 +85,13 @@ def validate_poll_worker(
             result["cpf"]
         )
 
+        # Validação do CPF parcial
+        if (
+            len(cpf_partial) != 4
+            or not cpf_partial.isdigit()
+        ):
+            return False
+
         # CPF inválido
         if not decrypted_cpf.startswith(
             cpf_partial
@@ -325,6 +332,12 @@ def identify_voter(
             result["cpf"]
         )
 
+        if (
+            len(cpf_partial) != 4
+            or not cpf_partial.isdigit()
+        ):
+            return None
+
         if not decrypted_cpf.startswith(
             cpf_partial
         ):
@@ -381,9 +394,7 @@ def register_vote(
             encrypt_hill_cipher(voter_id)
         )
 
-        vote_date = datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
+        vote_date = datetime.now()
 
         cursor.execute("""
             INSERT INTO votacao (
