@@ -580,11 +580,15 @@ def handle_open_voting():
 
                 
                 
+                voter_id = False
+                while not voter_id:
+                    voter_id = input(
+                        "Título do mesário "
+                        "(0 para voltar): "
+                    )
+                    if voter_id == "0":
+                        break
 
-                voter_id = input(
-                    "Título do mesário "
-                    "(0 para voltar): "
-                )
 
                 if voter_id == "0":
                     continue

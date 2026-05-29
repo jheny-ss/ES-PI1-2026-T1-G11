@@ -20,6 +20,8 @@ from models.audit import (
 )
 from models.validators.cpf_validation import *
 
+
+
 # ============================================================
 # VALIDAÇÃO DE MESÁRIO
 # ============================================================
@@ -199,8 +201,29 @@ def zeresima():
         connection.commit()
 
         print(
-            "Votação zerada com sucesso!"
+            "\n===== ZERÉSIMA =====\n"
+            "Votação zerada com sucesso!\n"
+            "Candidatos com zero votos:\n"
         )
+
+        cursor.execute(
+            "SELECT nome, numero_de_votacao, partido FROM candidatos ORDER BY nome"
+        )
+
+        candidatos = cursor.fetchall()
+
+        if not candidatos:
+            print("  Nenhum candidato cadastrado.")
+        else:
+            for c in candidatos:
+                print(
+                    f"  {c['nome']} | "
+                    f"Número: {c['numero_de_votacao']} | "
+                    f"Partido: {c['partido']} | "
+                    f"Votos: 0"
+                )
+
+        print("")
 
         return True
 

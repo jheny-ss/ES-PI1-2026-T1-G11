@@ -1,2 +1,6 @@
-[2026-05-29 14:59:44] ABERTURA: Votação iniciada com sucesso.
-[2026-05-29 15:00:11] SUCESSO: Voto registrado. 
+[2026-05-29 20:25:11] ABERTURA: Votação iniciada com sucesso. Total de votos zerado.
+[2026-05-29 20:25:47] ALERTA: Tentativa de acesso negado.
+[2026-05-29 20:26:48] ALERTA: Tentativa de acesso negado.
+[2026-05-29 20:27:20] SUCESSO: Voto registrado. 
+[2026-05-29 20:29:09] ALERTA: Tentativa de acesso negado.
+[2026-05-29 20:29:31] ENCERRAMENTO: Votação finalizada com sucesso.

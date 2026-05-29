@@ -45,6 +45,12 @@ os.makedirs(LOG_DIRECTORY, exist_ok=True)
 def clear_logs_and_protocols():
     """
     Apaga log e protocolos ao abrir nova votação.
+
+    Args:
+        None
+
+    Returns:
+        None
     """
     open(LOG_FILE, "w", encoding="utf-8").close()
     open(PROTOCOL_FILE, "w", encoding="utf-8").close()
@@ -92,7 +98,7 @@ def register_opening_log():
     clear_logs_and_protocols()
 
     register_log(
-        "ABERTURA: Votação iniciada com sucesso."
+        "ABERTURA: Votação iniciada com sucesso. Total de votos zerado."
     )
 
 
