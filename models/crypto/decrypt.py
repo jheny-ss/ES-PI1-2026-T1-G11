@@ -90,11 +90,16 @@ def euclidean_mod(number, mod):
 
 def generate_inverse_matrix():
     """
-    Gera a matriz inversa da chave.
+    Gera a matriz inversa da chave utilizada
+    pela Cifra de Hill.
+
+    Args:
+        None
 
     Returns:
         list:
-            Matriz inversa 2x2.
+            Matriz inversa 2x2 utilizada no
+            processo de descriptografia.
     """
 
     determinant = (

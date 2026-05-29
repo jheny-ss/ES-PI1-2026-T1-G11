@@ -7,11 +7,17 @@ from models.audit import (
 
 def validate_candidate_number(number):
     """
-    Valida número de candidato.
+    Valida o número de votação de um candidato.
 
     Regras:
     - Deve conter apenas números
     - Deve ter entre 2 e 5 dígitos
+
+    Args:
+        number (str): Número de votação do candidato.
+
+    Returns:
+        bool: True se o número for válido. False caso contrário.
     """
 
     number = number.strip()
@@ -28,11 +34,13 @@ def validate_candidate_number(number):
 
 
 def list_candidates():
-    """
-    Lista todos os candidatos cadastrados.
+    """ Lista todos os candidatos cadastrados no sistema. 
 
-    Returns:
-        None
+    Args: 
+        None 
+
+    Returns: 
+        None 
     """
 
     connection, cursor = get_cursor()
@@ -93,15 +101,14 @@ def list_candidates():
 
 
 def get_candidate_by_number(number):
-    """
-    Busca candidato pelo número.
+    """ 
+    Busca um candidato pelo número de votação. 
 
     Args:
-        number (str):
-            Número do candidato.
+    number (str): Número de votação do candidato. 
 
-    Returns:
-        dict | None
+    Returns: 
+    dict | None: Dicionário contendo os dados do candidato encontrado ou None caso não exista. 
     """
 
     connection, cursor = get_cursor()
@@ -131,6 +138,14 @@ def get_candidate_by_number(number):
         connection.close()
 
 def print_candidate(candidate: dict):      
+    """ 
+    Exibe os dados de um candidato formatados no terminal.
+
+    Args: 
+        candidate (dict): Dicionário contendo os dados do candidato. 
+    Returns: 
+        None 
+    """
     campos = [
         ("ID",           str(candidate["id"])),
         ("Nome",         candidate["nome"]),
@@ -156,19 +171,13 @@ def print_candidate(candidate: dict):
 
 def create_candidate(name, number, party):
     """
-    Cadastra um novo candidato.
-
-    Args:
-        name (str):
-            Nome do candidato.
-
-        number (str):
-            Número eleitoral.
-
-        party (str):
-            Partido político.
-
-    Returns:
+    Cadastra um novo candidato no sistema. 
+    Args: 
+        name (str): Nome do candidato. 
+        number (str): Número de votação do candidato. 
+        party (str): Partido do candidato. 
+    
+    Returns: 
         None
     """
 
@@ -241,13 +250,12 @@ def create_candidate(name, number, party):
 
 def delete_candidate(number):
     """
-    Remove candidato pelo número.
+    Remove um candidato do sistema. 
+    
+    Args: 
+        number (str): Número de votação do candidato. 
 
-    Args:
-        number (str):
-            Número do candidato.
-
-    Returns:
+    Returns: 
         None
     """
 
@@ -300,9 +308,12 @@ def delete_candidate(number):
 
 def update_candidate():
     """
-    Atualiza dados de um candidato.
+    Atualiza os dados de um candidato cadastrado. 
 
-    Returns:
+    Args: 
+        None 
+
+    Returns: 
         None
     """
 
@@ -379,23 +390,3 @@ def update_candidate():
         connection.close()
 
 
-def validate_candidate_number(number):
-    """
-    Valida número de candidato.
-
-    Regras:
-    - Deve conter apenas números
-    - Deve ter entre 2 e 5 dígitos
-    """
-
-    number = number.strip()
-
-    # Apenas números
-    if not number.isdigit():
-        return False
-
-    # Tamanho permitido
-    if len(number) < 2 or len(number) > 5:
-        return False
-
-    return True

@@ -11,10 +11,13 @@ from models.audit import (
 
 def list_electors():
     """
-    Lista todos os eleitores.
-
-    Returns:
-        None
+    Lista todos os eleitores cadastrados no sistema. 
+    Os dados criptografados são descriptografados antes da exibição.
+    
+    Args: 
+        None 
+    Returns: 
+        None 
     """
 
     connection, cursor = get_cursor()
@@ -125,14 +128,13 @@ def list_electors():
 
 def get_elector_by_cpf(cpf):
     """
-    Busca eleitor pelo CPF.
+    Busca um eleitor pelo CPF. 
 
-    Args:
-        cpf (str):
-            CPF do eleitor.
+    Args: 
+        cpf (str): CPF do eleitor. 
 
-    Returns:
-        dict | None
+    Returns: 
+        dict | None: Dicionário contendo os dados do eleitor encontrado ou None caso não exista.
     """
 
     connection, cursor = get_cursor()
@@ -187,7 +189,16 @@ def get_elector_by_cpf(cpf):
         cursor.close()
         connection.close()
 
-def print_elector(elector: dict):      
+def print_elector(elector: dict):    
+    """ 
+    Exibe os dados de um eleitor formatados no terminal. 
+
+    Args: 
+    elector (dict): Dicionário contendo os dados do eleitor. 
+
+    Returns: 
+        None 
+    """  
     campos = [
         ("ID",           str(elector["id"])),
         ("Nome",         elector["nome"]),
@@ -223,28 +234,17 @@ def create_elector(
     is_poll_worker
 ):
     """
-    Cadastra eleitor.
-
-    Args:
-        cursor:
-            Cursor do banco.
-
-        name (str):
-            Nome do eleitor.
-
-        cpf (str):
-            CPF do eleitor.
-
-        voter_id (str):
-            Título eleitoral.
-
-        access_key (str):
-            Chave de acesso.
-
-        is_poll_worker (bool):
-            Status de mesário.
-
-    Returns:
+    Cadastra um novo eleitor no banco de dados. 
+    
+    Args: 
+        cursor (Cursor): Cursor utilizado para executar comandos SQL. 
+        name (str): Nome do eleitor. 
+        cpf (str): CPF do eleitor. 
+        voter_id (str): Título de eleitor. 
+        access_key (str): Chave de acesso do eleitor. 
+        is_poll_worker (bool): Indica se o eleitor possui função de mesário. 
+       
+    Returns: 
         None
     """
 
@@ -289,13 +289,12 @@ def create_elector(
 
 def delete_elector(cpf):
     """
-    Remove eleitor pelo CPF.
+    Remove um eleitor do sistema utilizando o CPF.
 
-    Args:
-        cpf (str):
-            CPF do eleitor.
+    Args: 
+        cpf (str): CPF do eleitor. 
 
-    Returns:
+    Returns: 
         None
     """
 
@@ -357,22 +356,15 @@ def update_elector_db(
     is_poll_worker
 ):
     """
-    Atualiza dados do eleitor.
+    Atualiza os dados de um eleitor cadastrado. 
 
-    Args:
-        cpf (str):
-            CPF do eleitor.
+    Args: 
+        cpf (str): CPF do eleitor. 
+        name (str): Novo nome do eleitor. 
+        voter_id (str): Novo título de eleitor. 
+        is_poll_worker (bool): Novo status de mesário. 
 
-        name (str):
-            Novo nome.
-
-        voter_id (str):
-            Novo título.
-
-        is_poll_worker (bool):
-            Novo status de mesário.
-
-    Returns:
+    Returns: 
         None
     """
 
@@ -434,20 +426,15 @@ def update_elector_db(
 
 def elector_exists(cursor, cpf, voter_id):
     """
-    Verifica se eleitor já existe.
+    Verifica se já existe um eleitor cadastrado com o CPF ou título de eleitor informados. 
+    
+    Args: 
+    cursor (Cursor): Cursor utilizado para executar comandos SQL. 
+        cpf (str): CPF do eleitor. 
+        voter_id (str): Título de eleitor. 
 
-    Args:
-        cursor:
-            Cursor do banco.
-
-        cpf (str):
-            CPF do eleitor.
-
-        voter_id (str):
-            Título eleitoral.
-
-    Returns:
-        bool
+    Returns: 
+        bool: True se o eleitor já estiver cadastrado. False caso contrário.
     """
 
     encrypted_cpf = encrypt_hill_cipher(

@@ -33,26 +33,26 @@ def validate_poll_worker(
     Valida se o usuário é um mesário autorizado.
 
     Regras:
-    - título deve existir
-    - chave deve ser válida
-    - CPF deve corresponder
-    - status_mesario deve ser TRUE
+    - O título de eleitor deve existir.
+    - A chave de acesso deve ser válida.
+    - Os quatro primeiros dígitos do CPF devem corresponder.
+    - O usuário deve possuir status de mesário.
 
     Args:
         cpf_partial (str):
-            4 primeiros dígitos do CPF.
+            Quatro primeiros dígitos do CPF.
 
         voter_id (str):
             Título de eleitor.
 
         access_key (str):
-            Chave de acesso.
+            Chave de acesso do mesário.
 
     Returns:
         bool:
-            True se autorizado.
-            False caso contrário.
-    """
+            Retorna True caso o usuário seja um mesário
+            autorizado. Retorna False caso contrário.
+"""
 
     connection, cursor = get_cursor()
 
@@ -121,14 +121,10 @@ def validate_poll_worker(
 
 def generate_access_key(full_name):
     """
-    Gera uma chave de acesso automática.
+    Gera automaticamente uma chave de acesso para o eleitor.
 
-    Formato:
-    - 3 letras
-    - 4 números aleatórios
-
-    Exemplo:
-        ARS4821
+    A chave é formada pelas três primeiras letras derivadas
+    do nome e por quatro números aleatórios.
 
     Args:
         full_name (str):
@@ -175,14 +171,16 @@ def zeresima():
     """
     Realiza a zerésima da votação.
 
-    Funcionamento:
-    - remove votos anteriores
-    - redefine status_votacao
+    Remove todos os votos registrados anteriormente e
+    redefine o status de votação de todos os eleitores.
+
+    Args:
+        None
 
     Returns:
         bool:
-            True se executado.
-            False caso contrário.
+            Retorna True se a operação for executada com
+            sucesso. Retorna False em caso de erro.
     """
 
     connection, cursor = get_cursor()
@@ -231,21 +229,19 @@ def generate_voting_protocol(
     candidate_number
 ):
     """
-    Gera protocolo oficial da votação.
+    Gera um protocolo único para comprovação do voto.
 
-    Padrão:
-    V + 2 letras + 26 +
-    número candidato +
-    5 dígitos aleatórios
-
-    Exemplo:
-        VAB261512345
+    O protocolo é composto por letras aleatórias, ano da
+    eleição, número do candidato e dígitos aleatórios.
 
     Args:
-        candidate_number (str | None)
+        candidate_number (str | None):
+            Número do candidato escolhido. Caso o voto
+            seja nulo, recebe None.
 
     Returns:
-        str
+        str:
+            Protocolo gerado para o voto.
     """
 
     UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -286,15 +282,24 @@ def identify_voter(
     access_key
 ):
     """
-    Identifica eleitor pelas credenciais.
+    Identifica um eleitor por meio do título de eleitor,
+    CPF parcial e chave de acesso.
 
     Args:
-        voter_id (str)
-        cpf_partial (str)
-        access_key (str)
+        voter_id (str):
+            Título de eleitor informado pelo usuário.
+
+        cpf_partial (str):
+            Quatro primeiros dígitos do CPF.
+
+        access_key (str):
+            Chave de acesso do eleitor.
 
     Returns:
-        dict | None
+        dict | None:
+            Retorna um dicionário com os dados do eleitor
+            caso a identificação seja válida. Retorna None
+            caso os dados sejam inválidos.
     """
 
     connection, cursor = get_cursor()
@@ -366,20 +371,26 @@ def register_vote(
     protocol
 ):
     """
-    Registra o voto no banco.
+    Registra um voto no banco de dados.
 
-    Funcionamento:
-    - salva voto
-    - salva protocolo criptografado
-    - atualiza status_votacao
+    Também atualiza o status de votação do eleitor e
+    armazena o protocolo criptografado.
 
     Args:
-        voter_id (str)
-        candidate_id (int | None)
-        protocol (str)
+        voter_id (str):
+            Título de eleitor.
+
+        candidate_id (int | None):
+            Identificador do candidato escolhido.
+            Recebe None em caso de voto nulo.
+
+        protocol (str):
+            Protocolo gerado para o voto.
 
     Returns:
-        bool
+        bool:
+            Retorna True se o voto for registrado com
+            sucesso. Retorna False em caso de erro.
     """
 
     connection, cursor = get_cursor()
@@ -442,16 +453,23 @@ def register_vote(
 
 def cast_vote():
     """
-    Executa o fluxo completo da votação.
+    Executa todo o fluxo de votação do sistema.
 
-    Fluxo:
-    1. Identifica eleitor
-    2. Verifica voto duplo
-    3. Captura candidato
-    4. Confirma voto
-    5. Gera protocolo
-    6. Registra voto
-    7. Registra auditoria
+    O processo inclui:
+    - Identificação do eleitor.
+    - Validação das credenciais.
+    - Seleção do candidato.
+    - Confirmação do voto.
+    - Geração do protocolo.
+    - Registro do voto.
+    - Registro das informações de auditoria.
+
+    Args:
+        None
+
+    Returns:
+        None:
+            Não retorna valor.
     """
 
     # ========================================================
@@ -644,20 +662,26 @@ def finalize_voting(
     access_key
 ):
     """
-    Finaliza oficialmente a votação.
+    Finaliza oficialmente o processo de votação.
 
-    Regras:
-    - apenas mesário autorizado
-    - confirmação obrigatória
-    - revalidação da chave
+    A operação só pode ser realizada por um mesário
+    autorizado após confirmação da chave de acesso.
 
     Args:
-        cpf_partial (str)
-        voter_id (str)
-        access_key (str)
+        cpf_partial (str):
+            Quatro primeiros dígitos do CPF do mesário.
+
+        voter_id (str):
+            Título de eleitor do mesário.
+
+        access_key (str):
+            Chave de acesso do mesário.
 
     Returns:
-        bool
+        bool:
+            Retorna True se a votação for encerrada
+            com sucesso. Retorna False caso a operação
+            seja cancelada ou negada.
     """
 
     # Validação inicial

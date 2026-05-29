@@ -5,6 +5,15 @@ from models.audit import register_error_log
 
 
 def elector_choice():
+    """ 
+    Exibe a quantidade de votos recebidos por cada partido. 
+    Os partidos são apresentados em ordem decrescente de quantidade de votos. 
+    
+    Args: 
+        None
+    Returns: 
+        None
+    """
 
     connection, cursor = get_cursor()
 
@@ -59,6 +68,17 @@ def elector_choice():
 
 
 def statistic_voters():
+    """ 
+    Exibe estatísticas de participação na eleição. 
+    Calcula o total de eleitores cadastrados, o total de votos registrados e a porcentagem de comparecimento. 
+    
+    Args: 
+        None 
+
+    Returns: 
+        None
+
+    """
 
     connection, cursor = get_cursor()
 
@@ -135,13 +155,13 @@ def statistic_voters():
 
 
 def ballot_box():
-    """
-    Exibe o boletim de urna com os votos consolidados
-    por candidato em ordem alfabética e declara
-    o vencedor da eleição.
-
-    Returns:
-        None
+    """ 
+    Exibe o boletim de urna com os votos consolidados por candidato em ordem alfabética e declara o vencedor da eleição. 
+    
+    Args: 
+        None 
+    Returns: 
+        None 
     """
 
     connection, cursor = get_cursor()
@@ -286,14 +306,14 @@ def ballot_box():
 
 
 def integrity_validation():
-    """
-    Valida a integridade da eleição comparando
-    o total de votos registrados na urna
-    com o total de eleitores com status
-    'Já Votou'.
-
-    Returns:
-        None
+    """ 
+    Valida a integridade da eleição comparando o total de votos registrados na urna com o total de eleitores marcados como votantes. 
+    
+    Args: 
+        None 
+        
+    Returns: 
+        None 
     """
 
     connection, cursor = get_cursor()

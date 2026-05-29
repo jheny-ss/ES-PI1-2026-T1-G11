@@ -30,11 +30,16 @@ from models.audit import (
 
 def run_system():
     """
-    Executa o sistema principal.
+    Executa o sistema principal. 
+    Exibe o menu principal e direciona o 
+    usuário para os módulos de gerenciamento, 
+    votação ou encerramento do sistema.
 
-    Exibe o menu principal continuamente e direciona o usuário
-    para os módulos de gerenciamento, votação ou encerramento
-    do sistema.
+    Args: 
+        None 
+
+    Returns: 
+        None
     """
 
     system_running = True
@@ -68,6 +73,13 @@ def handle_management():
 
     Permite ao usuário acessar as funcionalidades de
     gerenciamento de eleitores ou candidatos.
+
+
+    Args:
+        None 
+
+    Returns: 
+        None
     """
 
     management_running = True
@@ -100,6 +112,12 @@ def handle_electors():
 
     Permite listar, buscar, remover, editar
     e cadastrar eleitores.
+
+    Args: 
+        None 
+
+    Returns: 
+        None
     """
 
     elector_running = True
@@ -316,6 +334,11 @@ def handle_electors():
 def handle_candidates():
     """
     Controla o fluxo do menu de candidatos.
+    Args: 
+        None 
+
+    Returns: 
+        None
     """
 
     candidate_running = True
@@ -440,6 +463,12 @@ def handle_voting():
     Permite autenticar o mesário, iniciar
     a votação, acessar auditoria e visualizar
     resultados.
+
+    Args: 
+        None 
+    
+    Returns: 
+        None
     """
 
     voting_running = True
@@ -530,6 +559,12 @@ def handle_open_voting():
 
     Permite registrar votos e encerrar
     o processo de votação.
+
+    Args: 
+        None 
+    
+    Returns: 
+        None
     """
 
     voting_open = True
@@ -615,6 +650,12 @@ def handle_results():
     Permite visualizar boletim de urna,
     estatísticas, votos por partido e
     validação de integridade.
+
+    Args: 
+        None 
+
+    Returns:
+        None
     """
 
     results_running = True
@@ -656,6 +697,12 @@ def handle_audit():
 
     Permite visualizar logs do sistema
     e protocolos de votação.
+
+    Args: 
+        None 
+    
+    Returns: 
+        None
     """
 
     audit_running = True

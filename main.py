@@ -5,8 +5,15 @@ def main():
     """
     Função principal do sistema.
 
-    Responsável por iniciar a execução
-    do programa.
+    Responsável por iniciar a execução do programa
+    e chamar o controlador principal do sistema.
+
+    Args:
+        None
+
+    Returns:
+        None:
+            Não retorna valor.
     """
 
     run_system()

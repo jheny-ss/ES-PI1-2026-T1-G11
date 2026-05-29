@@ -5,8 +5,12 @@ def get_connection():
     """
     Cria e retorna uma conexão com o banco de dados MySQL.
 
+    Args:
+        None
+
     Returns:
-        connection: Objeto de conexão.
+        mysql.connector.connection.MySQLConnection:
+            Objeto de conexão com o banco de dados
     """
     return mysql.connector.connect(
         host="localhost",
@@ -18,10 +22,16 @@ def get_connection():
 
 def get_cursor():
     """
-    Retorna conexão e cursor configurado para dicionário.
+    Cria e retorna uma conexão e um cursor configurado
+    para retornar resultados em formato de dicionário.
+
+    Args:
+        None
 
     Returns:
-        tuple: (conexao, cursor)
+        tuple:
+            Tupla contendo a conexão com o banco de dados
+            e o cursor configurado para dicionário.
     """
     connection = get_connection()
     cursor = connection.cursor(dictionary=True)

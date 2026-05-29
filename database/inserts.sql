@@ -4,69 +4,67 @@ VALUES
 
 (
     'Carlos José',
-    'ZSVMOAIZHYOC', -- 674724100108
+    'ZSVMOAIZHYOC', 
     'L6N7PBTK1UN5',
-    'EGKLYOL2', -- CAJ2824
+    'EGKLYOL2', 
     FALSE,
     TRUE
 ),
 
 (
     'Jhenyfer Souza',
-    'WOXQN83ZHYOC', -- 484923790108
+    'WOXQN83ZHYOC', 
     'WO3YPDWK1UDQ',
-    'ZF1AO8VH', -- JHS1409
+    'ZF1AO8VH', 
     FALSE,
     TRUE
 ),
 
 (
     'Maria Aparecida',
-    'RGTGRFK4HYOC', -- 276135040108
+    'RGTGRFK4HYOC', 
     'YOQDUHJ11UN5',
-    'YA50QBP8', -- MAA5506
+    'YA50QBP8', 
     FALSE,
     FALSE
 ),
 
 (
     'Leticia Dias',
-    'ZS1U2XHYHYOC', -- 678578010108
+    'ZS1U2XHYHYOC',
     'UJQETHVJ2WTE',
-    '0FB9HYHW', -- LED5012
+    '0FB9HYHW', 
     FALSE,
     FALSE
 ),
 
 (
     'Carla Dias',
-    'SF0URFZRHYO9', -- 526835750132
+    'SF0URFZRHYO9', 
     'XOUISEJ2ZQN5',
-    'EGA7XORB', -- CAD4657
+    'EGA7XORB', 
     FALSE,
     FALSE
 ),
 
 (
     'Daiana Souza',
-    'HYL5QBVJHYZR', -- 011350710175
+    'HYL5QBVJHYZR', 
     '3ZYNK2YNK4L2',
-    'GJ3ESIP8', -- DAS3286
+    'GJ3ESIP8', 
     FALSE,
     FALSE
 ),
 
 (
     'Edson Silva',
-    'O840XPQCHYOC', -- 408857420108
+    'O840XPQCHYOC', 
     'SG0SO9K4HYJZ',
-    'LS2CZSVH', -- EDS2679
+    'LS2CZSVH', 
     FALSE,
     FALSE
 );
--- ============================================================
--- INSERTS CANDIDATOS
--- ============================================================
+
 
 INSERT INTO candidatos
 (nome, numero_de_votacao, partido)

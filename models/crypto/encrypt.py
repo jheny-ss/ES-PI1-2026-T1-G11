@@ -3,23 +3,31 @@
 # ============================================================
 
 """
-Módulo responsável pela criptografia de textos
-utilizando a Cifra de Hill 2x2.
+Módulo responsável pela criptografia de textos utilizando
+a Cifra de Hill 2x2.
 
-A criptografia funciona através de:
-- Matrizes
-- Álgebra linear
-- Aritmética modular (mod 36)
+A criptografia é baseada em operações matriciais e
+aritmética modular, permitindo a codificação de letras
+e números definidos no alfabeto do sistema.
 
-O sistema suporta:
-- Letras
-- Números
+Constantes:
+    ALPHABET (str):
+        Conjunto de caracteres permitidos.
 
-A chave utilizada é:
+    MOD (int):
+        Tamanho do alfabeto utilizado como módulo
+        para as operações matemáticas.
+
+    KEY_MATRIX (list):
+        Matriz-chave utilizada na criptografia.
+
+Matriz utilizada:
 
 | 2 1 |
 | 3 2 |
 """
+
+
 
 
 # ============================================================
